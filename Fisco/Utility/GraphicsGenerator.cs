@@ -7,7 +7,7 @@ namespace Fisco.Utility
     internal class GraphicsGenerator
     {
         //const to 96 PPI
-        public const decimal PPI_FACTOR = 3.779527559055118m;
+        public const decimal PPI_FACTOR = 3.405m; //3.779527559055118m;
         public const int SCALE = 1;
 
         public static Graphics GenerateGraphicsObject(ref Bitmap img, Color backColor)

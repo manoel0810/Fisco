@@ -14,7 +14,7 @@ namespace Fisco.Component
     public class Table : IFiscoComponent, IDrawable
     {
         //TODO: mover SECURITY_MARGIN para um escopo global
-        private const int SECURITY_MARGIN = 35;
+        private const int SECURITY_MARGIN = 0; //35;
 
         private Bitmap _tableBitmap;
         private Graphics _tableGraphics;
@@ -272,7 +272,7 @@ namespace Fisco.Component
         }
 
         private Point GetStartPont()
-        {
+        { 
             var realSize = GetRealWidth(false);
             var sizeWithMargin = GetRealWidth();
 
@@ -283,7 +283,7 @@ namespace Fisco.Component
         public void Draw(ref Graphics g, ref Context drawContext)
         {
             DrawTableGrid();
-            g.DrawImage(_tableBitmap, new Point(GetStartPont().X, drawContext.GetStartHeight + drawContext.TopOffSet));
+            g.DrawImage(_tableBitmap, new Point(0, drawContext.GetStartHeight + drawContext.TopOffSet));
             drawContext.UpdateHeight(_tableRealHeight + drawContext.TopOffSet);
         }
 

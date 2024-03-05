@@ -4,6 +4,7 @@ using Fisco.Enumerator;
 using System;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.Linq;
 using System.Windows.Forms;
 using Image = System.Drawing.Image;
 namespace FiscoTeste
@@ -30,7 +31,7 @@ namespace FiscoTeste
             {
                 using (FiscoPapper fisco = new FiscoPapper(BobineSize._80x297mm, 0, 10, true))
                 {
-
+                    /*
                     Table t = new Table(4, BobineSize._80x297mm)
                     {
                         RowWrap = true,
@@ -63,6 +64,63 @@ namespace FiscoTeste
                     }
 
                     fisco.AddComponent(t);
+                    */
+
+                    Fisco.Component.Image logo = new Fisco.Component.Image(new Bitmap(Image.FromFile("E:\\impressora.png"), new Size(40, 40)), ItemAlign.Center);
+                    fisco.AddComponent(logo);
+
+                    Fisco.Component.Text H1 = new Text(new Font("Consolas", 12f), "\nEasyLi Pro\n", ItemAlign.Center, Brushes.Black);
+                    fisco.AddComponent(H1);
+
+                    string h = $@"
+USUÁRIO....: Manoel Victor S. Lira
+MATRÍCULA..: 60179
+
+REGISTRO..: Nº 166548
+DATA......: 04/03/2024
+LOCAL.....: São José do Egito - PE";
+
+                    H1 = new Text(new Font("Consolas", 10f), h, ItemAlign.Left, Brushes.Black);
+                    fisco.AddComponent(H1);
+
+                    H1 = new Text(new Font("Consolas", 8f), "\n---- REGISTROS ----\n", ItemAlign.Center, Brushes.Black);
+                    fisco.AddComponent(H1);
+
+
+                    Table t = new Table(3, BobineSize._80x297mm);
+                    t.SetPercentage(new float[] { 10, 15, 75 });
+                    t.Columns.HeaderFont = new Font("Consolas", 12f);
+
+                    t.Columns.Add(new TableColumn("Nº"));
+                    t.Columns.Add(new TableColumn("CODE"));
+                    t.Columns.Add(new TableColumn("TITLE"));
+
+
+                    object[] values =
+                    {
+                        new object[] { "1", "2654", "O Conto da Sereia Arhto" },
+                        new object[] { "2", "7896", "A Arte da Guerra"},
+                        new object[] { "3", "1234", "O Senhor dos Anéis"},
+                        new object[] { "4", "5678", "Dom Quixote"},
+                        new object[] { "5", "4321", "Cem Anos de Solidão"},
+                    };
+
+                    foreach (object[] obj in values.Cast<object[]>())
+                    {
+                        TableRow row = t.GetNewRow();
+                        for (int i = 0; i < 3; i++)
+                            row.AddCell(new TableCell(new Text(new Font("Consolas", 10f), (string)obj[i], ItemAlign.Left, Brushes.Black)));
+
+                        t.Rows.Add(row);
+                    }
+
+                    fisco.AddComponent(t);
+
+                    var fim = new Text(new Font("Consolas", 8f), "\nsignarute: af25s64f8eaa52\n", ItemAlign.Center, Brushes.Black); //hash: 91CFB1FAF4957E055D6CDCFF8F24821A\n
+                    fisco.AddComponent(fim);
+                    fim = new Text(new Font("Consolas", 8f), "hash: 91CFB1FAF4957E055D6CDCFF8F24821A", ItemAlign.Center, Brushes.Black);
+                    fisco.AddComponent(fim);
+
                     img = fisco.Render();
                     img = new Bitmap(img);
                 }
