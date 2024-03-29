@@ -1,6 +1,6 @@
 ﻿namespace Fisco.Component
 {
-    public class Container
+    internal class Container
     {
 
     }

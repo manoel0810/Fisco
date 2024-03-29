@@ -1,17 +1,37 @@
 ﻿using Fisco.Component.Interfaces;
 using Fisco.Enumerator;
 using Fisco.Exceptions;
+using Fisco.Utility.Constants;
+using Fisco.Utility.Constants.Specific;
 using System;
 using System.Drawing;
 
 namespace Fisco.Component
 {
+    /// <summary>
+    /// Componente para representação de imagens
+    /// </summary>
     public class Image : IFiscoComponent, IDisposable, ICloneable, IDrawable
     {
         private readonly Bitmap _bmp;
         private readonly ItemAlign _align;
+
+        /// <summary>
+        /// Obtém ou define o <see cref="Context"/> de trabalho
+        /// </summary>
         public Context FiscoContext { get; private set; }
+        /// <summary>
+        /// Obtém as dimensões da imagem atual
+        /// </summary>
+        /// <returns></returns>
         public Size GetDim() => _bmp.Size;
+
+        /// <summary>
+        /// Cria um novo elemento gráfico do tipo <see cref="IFiscoComponent"/> para renderização com suporte para imagens
+        /// </summary>
+        /// <param name="image">Imagem</param>
+        /// <param name="align">Alinhamento</param>
+        /// <exception cref="ArgumentNullException"></exception>
 
         public Image(Bitmap image, ItemAlign align)
         {
@@ -36,7 +56,7 @@ namespace Fisco.Component
 
             if (!context.IgnoreOutBoundsError)
                 if (NoFits())
-                    throw new OutOfBoundsException("a imagem não cabe na área disponível");
+                    throw new OutOfBoundsException(ImageConstants.IMAGE_NO_FITS);
         }
 
         PointF GetCoordenate()
@@ -54,25 +74,33 @@ namespace Fisco.Component
                 return new PointF(leftMargin, FiscoContext.GetStartHeight + FiscoContext.TopOffSet);
             }
 
-            throw new NoDeterministicsException("Nenhum ItemAlign válido foi passado");
+            throw new NoDeterministicsException(Constants.NO_ALIGN_PASSED);
         }
 
-        public void Draw(ref Graphics g, ref Context drawContext)
+        void IDrawable.Draw(ref Graphics g, ref Context drawContext)
         {
             CheckFits(drawContext);
             g.DrawImage(_bmp, GetCoordenate());
             drawContext.UpdateHeight(_bmp.Height);
         }
 
-        public void DrawInsideTable(ref Graphics g, Rectangle region)
+        void IDrawable.DrawInsideTable(ref Graphics g, Rectangle region)
         {
-            throw new NotImplementedException();
+            if (region.Width < _bmp.Width || region.Height < _bmp.Height)
+                throw new OutOfBoundsException(ImageConstants.OUT_OF_BOUNDS_MESSAGE);
+
+            g.DrawImage(_bmp, new Point(region.X, region.Y));
         }
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             _bmp.Dispose();
         }
+
+        /// <summary>
+        /// Clona o objeto atual
+        /// </summary>
+        /// <returns></returns>
 
         public object Clone()
         {
@@ -80,6 +108,6 @@ namespace Fisco.Component
             {
                 FiscoContext = FiscoContext
             };
-        }       
+        }
     }
 }
