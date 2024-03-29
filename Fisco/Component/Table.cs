@@ -4,6 +4,8 @@ using Fisco.Exceptions.Table.Cells;
 using Fisco.Exceptions.Table.Columns;
 using Fisco.Exceptions.Table.Rows;
 using Fisco.Utility;
+using Fisco.Utility.Constants;
+using Fisco.Utility.Constants.Specific;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,23 +13,42 @@ using System.Linq;
 
 namespace Fisco.Component
 {
+    /// <summary>
+    /// Componente para representação de tabelas
+    /// </summary>
+
     public class Table : IFiscoComponent, IDrawable
     {
-        //TODO: mover SECURITY_MARGIN para um escopo global
-        private const int SECURITY_MARGIN = 0; //35;
-
         private Bitmap _tableBitmap;
         private Graphics _tableGraphics;
         private readonly BobineSize _size;
         private int _tableRealHeight = 0;
 
+        /// <summary>
+        /// Define a quebra automatica de linhas do cabeçalho
+        /// </summary>
         public bool RowWrap { get; set; } = false;
+        /// <summary>
+        /// Define o número de colunas da tabela
+        /// </summary>
         public int ColumnCount { get; private set; }
+        /// <summary>
+        /// Obtém a porcentagem de cada coluna com relção a largura disponível
+        /// </summary>
         public float[] UsePercentage { get; private set; }
+        /// <summary>
+        /// Define o pincel para desenhar o cabeçalho
+        /// </summary>
         public Pen TableLineColor { get; set; } = new Pen(Brushes.Black, 1.5f);
 
         private readonly bool _ignoreOutBoundsError;
+        /// <summary>
+        /// Colunas da tabela
+        /// </summary>
         public readonly Column Columns;
+        /// <summary>
+        /// Linhas da tabela
+        /// </summary>
         public readonly Row Rows;
 
         //---------------------------------------------------------------------------------//
@@ -37,9 +58,17 @@ namespace Fisco.Component
 
         private Point GetCurrentPosition() => new Point(_currentXPosition, _currentYPosition);
 
-        private Point GetNewPointFromVector(Point unit) => new Point(_currentXPosition - unit.X, _currentYPosition - unit.Y);
+        //private Point GetNewPointFromVector(Point unit) => new Point(_currentXPosition - unit.X, _currentYPosition - unit.Y);
 
         //---------------------------------------------------------------------------------//
+
+
+        /// <summary>
+        /// Cria um novo elemento gráfico do tipo <see cref="IFiscoComponent"/> para renderização com suporte para tabelas
+        /// </summary>
+        /// <param name="columnsCount">Número total de colunas</param>
+        /// <param name="size">Tipo da bobina </param>
+        /// <param name="ignoreOutBoundsError">Quando true, ignora áreas fora dos limites de desenho</param>
 
         public Table(int columnsCount, BobineSize size, bool ignoreOutBoundsError = false)
         {
@@ -55,7 +84,7 @@ namespace Fisco.Component
 
         private void LoadWidths()
         {
-            float partValue = 100f / ColumnCount;
+            float partValue = (float)TableConstants.MAX_WIDTH_PERCENTAGE / ColumnCount;
             float[] values = new float[ColumnCount];
 
             for (int i = 0; i < ColumnCount; i++)
@@ -64,23 +93,37 @@ namespace Fisco.Component
             SetPercentage(values);
         }
 
+        /// <summary>
+        /// Retorna uma nova <see cref="TableRow"/> baseado no esquema tual da tabela
+        /// </summary>
+        /// <returns></returns>
+
         public TableRow GetNewRow()
         {
             return new TableRow(ColumnCount);
         }
 
+        /// <summary>
+        /// Define a porcentagem de cada coluna com relção a largura disponível
+        /// </summary>
+        /// <param name="widths">Medidas</param>
+        /// <exception cref="InvalidWidthsColumnException"></exception>
+
         public void SetPercentage(float[] widths)
         {
             if (widths.Length != ColumnCount)
-                throw new InvalidWidthsColumnException("A quantidade de valores passada é diferente do número de colunas");
+                throw new InvalidWidthsColumnException(TableConstants.VALUES_OF_COLUNMS_NO_MATCH);
 
-            if ((int)widths.Sum() > 100)
-                throw new InvalidWidthsColumnException("A soma dos valores para tamanho das colunas não deve ser superior a 100%");
+            if ((int)widths.Sum() > TableConstants.MAX_WIDTH_PERCENTAGE)
+                throw new InvalidWidthsColumnException(TableConstants.SUM_PERCENTAGE_MAX_MESSAGE);
+
+            if ((int)widths.Sum() < TableConstants.MAX_WIDTH_PERCENTAGE)
+                throw new InvalidWidthsColumnException(TableConstants.SUM_PERCENTAGE_MIN_MESSAGE);
 
             UsePercentage = widths;
         }
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             _tableGraphics.Dispose();
             _tableBitmap.Dispose();
@@ -102,10 +145,12 @@ namespace Fisco.Component
             _currentXPosition += rectangle.Width;
         }
 
+        /*
         private void UpdateYPosition(Rectangle rectangle)
         {
             _currentYPosition += rectangle.Height;
         }
+        */
 
         private void NextRow(Rectangle rectangle)
         {
@@ -137,12 +182,12 @@ namespace Fisco.Component
 
         private float GetRealWidth(bool incluseSecurityMargin = true)
         {
-            return BobineProps.GetSizesUsingPPI(_size)[0] - (incluseSecurityMargin ? SECURITY_MARGIN : 0);
+            return BobineProps.GetSizesUsingPPI(_size)[0] - (incluseSecurityMargin ? TableConstants.SECURITY_MARGIN : 0);
         }
 
         private float GetRealSizeByPercentage(float percentage)
         {
-            return (GetRealWidth() * percentage) / 100f;
+            return (GetRealWidth() * percentage) / (float)TableConstants.MAX_WIDTH_PERCENTAGE;
         }
 
         private void DrawComponent(IDrawable component, Rectangle region)
@@ -271,55 +316,88 @@ namespace Fisco.Component
             }
         }
 
+        /*
         private Point GetStartPont()
-        { 
+        {
             var realSize = GetRealWidth(false);
             var sizeWithMargin = GetRealWidth();
 
             var startX = (realSize - sizeWithMargin) / 2;
             return new Point((int)startX - 15, _currentYPosition);
         }
+        */
 
-        public void Draw(ref Graphics g, ref Context drawContext)
+        void IDrawable.Draw(ref Graphics g, ref Context drawContext)
         {
             DrawTableGrid();
             g.DrawImage(_tableBitmap, new Point(0, drawContext.GetStartHeight + drawContext.TopOffSet));
             drawContext.UpdateHeight(_tableRealHeight + drawContext.TopOffSet);
         }
 
-        public void DrawInsideTable(ref Graphics g, Rectangle region)
+        void IDrawable.DrawInsideTable(ref Graphics g, Rectangle region)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException(TableConstants.NOT_SUPORTED_EXCEPTION_MESSAGE);
         }
+
+        /// <summary>
+        /// Representa a coleção de linhas de um <see cref="Table"/>
+        /// </summary>
 
         public class Row
         {
             private readonly Column _model;
             private readonly List<TableRow> _rows = new List<TableRow>();
 
+            /// <summary>
+            /// Cria uma nova <see cref="Row"/> com base no modelo de colunas
+            /// </summary>
+            /// <param name="model">Modelo de colunas</param>
+
             public Row(Column model)
             {
                 _model = model;
             }
+
+            /// <summary>
+            /// Obtém uma coleção com todas as linhas
+            /// </summary>
+            /// <returns></returns>
 
             public ICollection<TableRow> GetRows()
             {
                 return _rows;
             }
 
+            /// <summary>
+            /// Adiciona uma nova linha ao esquema de linhas da tabela atual
+            /// </summary>
+            /// <param name="row">Nova linha</param>
+            /// <exception cref="RowException"></exception>
+
             public void Add(TableRow row)
             {
                 if (row.GetCells().Count > _model.GetColumns().Count || row.GetCells().Count <= 0)
-                    throw new RowException("Linha inconsistente com o modelo de tabela atual");
+                    throw new RowException(TableConstants.INCONSISTENTE_ROW_MATCH_MESSAGE);
 
                 _rows.Add(row);
             }
+
+            /// <summary>
+            /// Remove uma linha do esquema de linhas da tabela atual
+            /// </summary>
+            /// <param name="row">Linha para remoção</param>
 
             public void Remove(TableRow row)
             {
                 if (row != null)
                     _rows.Remove(row);
             }
+
+            /// <summary>
+            /// Remove uma linha do esquema de linhas da tabela atual
+            /// </summary>
+            /// <param name="index">Index da <see cref="TableRow"/> para remoção</param>
+            /// <exception cref="ArgumentOutOfRangeException"></exception>
 
             public void RemoveAt(int index)
             {
@@ -328,9 +406,13 @@ namespace Fisco.Component
                     _rows.RemoveAt(index);
                 }
                 else
-                    throw new ArgumentOutOfRangeException(nameof(index), "O index deve estar dentro dos limites do array");
+                    throw new ArgumentOutOfRangeException(nameof(index), Constants.INDEX_OUT_OF_RANGE_MESSAGE);
             }
         }
+
+        /// <summary>
+        /// Representa a coleção de colunas de um <see cref="Table"/>
+        /// </summary>
 
         public class Column
         {
@@ -338,19 +420,44 @@ namespace Fisco.Component
             private readonly int _columnCount;
             private int _addColumns = 0;
 
+            /// <summary>
+            /// Obtém ou define a cor de fundo da coluna
+            /// </summary>
             public Brush BackColor { get; set; } = Brushes.LightGray;
+            /// <summary>
+            /// Obtém ou define a cor para conteúdos da coluna <br/> OBS: Apenas para <see cref="IFiscoComponent"/> do tipo <see cref="Text"/>
+            /// </summary>
             public Brush ForeGroundColor { get; set; } = Brushes.Black;
+            /// <summary>
+            /// Define a fonte do cabeçalho
+            /// </summary>
             public Font HeaderFont { get; set; } = new Font("Consolas", 12f);
+
+            /// <summary>
+            /// Cria um conjunto de n colunas
+            /// </summary>
+            /// <param name="columnCount">Quantidade de colunas</param>
 
             public Column(int columnCount)
             {
                 _columnCount = columnCount;
             }
 
+            /// <summary>
+            /// Obtém uma coleção com todas as colunas
+            /// </summary>
+            /// <returns></returns>
+
             public ICollection<TableColumn> GetColumns()
             {
                 return _columns;
             }
+
+            /// <summary>
+            /// Adiciona uma nova coluna ao esquema de colunas da tabela atual
+            /// </summary>
+            /// <param name="column">Nova coluna</param>
+            /// <exception cref="ColumnOutOfMarginException"></exception>
 
             public void Add(TableColumn column)
             {
@@ -360,14 +467,25 @@ namespace Fisco.Component
                     _addColumns++;
                 }
                 else
-                    throw new ColumnOutOfMarginException($"Não é possível adicionar mais uma coluna à tabela\nLimite máximo de {_columnCount} colunas");
+                    throw new ColumnOutOfMarginException(TableConstants.MAX_COLUMN_ITENS_EXCEDED_MESSAGE.Replace("arg0", _columnCount.ToString()));
             }
+
+            /// <summary>
+            /// Remove uma coluna do esquema de colunas da tabela atual
+            /// </summary>
+            /// <param name="column">Coluna para remoção</param>
 
             public void Remove(TableColumn column)
             {
                 if (_columns.Remove(column))
                     _addColumns--;
             }
+
+            /// <summary>
+            /// Remove uma coluna do esquema de colunas da tabela atual
+            /// </summary>
+            /// <param name="index">Index da <see cref="TableColumn"/> para remoção</param>
+            /// <exception cref="ArgumentOutOfRangeException"></exception>
 
             public void RemoveAt(int index)
             {
@@ -376,28 +494,50 @@ namespace Fisco.Component
                     _columns.RemoveAt(index);
                 }
                 else
-                    throw new ArgumentOutOfRangeException(nameof(index), "O index deve estar dentro dos limites do array");
+                    throw new ArgumentOutOfRangeException(nameof(index), Constants.INDEX_OUT_OF_RANGE_MESSAGE);
             }
         }
     }
 
+    /// <summary>
+    /// Representa uma célula de uma tabela com um componente específico e uma cor de fundo.
+    /// </summary>
     public class TableCell
     {
+        /// <summary>
+        /// Obtém ou define a cor de fundo da célula.
+        /// </summary>
         public BackColor CellBackColor { get; set; }
+        /// <summary>
+        /// Obtém o componente associado à célula.
+        /// </summary>
         public IFiscoComponent Component { get; private set; }
 
+        /// <summary>
+        /// Inicializa uma nova instância da classe <see cref="TableCell"/> com o componente especificado e cor de fundo padrão (None).
+        /// </summary>
+        /// <param name="component">O componente associado à célula.</param>
         public TableCell(IFiscoComponent component)
         {
             Component = component;
             CellBackColor = BackColor.None;
         }
 
+        /// <summary>
+        /// Inicializa uma nova instância da classe <see cref="TableCell"/> com o componente e cor de fundo especificados.
+        /// </summary>
+        /// <param name="component">O componente associado à célula.</param>
+        /// <param name="backColor">A cor de fundo da célula.</param>
         public TableCell(IFiscoComponent component, BackColor backColor)
         {
             CellBackColor = backColor;
             Component = component;
         }
 
+        /// <summary>
+        /// Obtém o pincel <see cref="Brush"/> correspondente à cor de fundo da célula.
+        /// </summary>
+        /// <returns>O pincel correspondente à cor de fundo da célula.</returns>
         public Brush GetBrush()
         {
             switch (CellBackColor)
@@ -415,29 +555,74 @@ namespace Fisco.Component
             }
         }
 
+
+        /// <summary>
+        /// Enumeração das cores de fundo possíveis para a célula.
+        /// </summary>
         [Flags]
         public enum BackColor
         {
+            /// <summary>
+            /// Nenhuma cor de fundo.
+            /// </summary>
             None,
+
+            /// <summary>
+            /// Cor de fundo clara.
+            /// </summary>
             LightGray,
+
+            /// <summary>
+            /// Cor de fundo cinza.
+            /// </summary>
             Gray,
+
+            /// <summary>
+            /// Cor de fundo cinza escuro.
+            /// </summary>
             DarkGray,
+
+            /// <summary>
+            /// Cor de fundo preta.
+            /// </summary>
             Black
         }
     }
 
+    /// <summary>
+    /// Representa uma coluna em uma tabela, com nome da coluna e nome de exibição da coluna.
+    /// </summary>
     public class TableColumn
     {
+        /// <summary>
+        /// Obtém o nome da coluna.
+        /// </summary>
         public string ColumnName { get; private set; }
+        /// <summary>
+        /// Obtém o nome de exibição da coluna.
+        /// </summary>
         public string ColumnDisplayName { get; private set; }
+        /// <summary>
+        /// Obtém ou define um valor que indica se a cor de fundo deve ser desenhada para a coluna.
+        /// </summary>
         public bool DrawBackColor { get; set; } = true;
 
+
+        /// <summary>
+        /// Inicializa uma nova instância da classe <see cref="TableColumn"/> com o nome da coluna especificado.
+        /// </summary>
+        /// <param name="columnName">O nome da coluna.</param>
         public TableColumn(string columnName)
         {
             ColumnName = columnName;
             ColumnDisplayName = columnName;
         }
 
+        /// <summary>
+        /// Inicializa uma nova instância da classe <see cref="TableColumn"/> com o nome da coluna e nome de exibição da coluna especificados.
+        /// </summary>
+        /// <param name="columnName">O nome da coluna.</param>
+        /// <param name="columnDisplayName">O nome de exibição da coluna.</param>
         public TableColumn(string columnName, string columnDisplayName)
         {
             ColumnName = columnName;
@@ -445,17 +630,29 @@ namespace Fisco.Component
         }
     }
 
+    /// <summary>
+    /// Representa uma linha em uma tabela, contendo células e métodos para manipulação dessas células.
+    /// </summary>
     public class TableRow
     {
         private readonly List<TableCell> _cells = new List<TableCell>();
         private readonly int _maxCellsCount = -1;
         private int _addRows = 0;
 
+        /// <summary>
+        /// Inicializa uma nova instância da classe <see cref="TableRow"/> com o número máximo de células especificado.
+        /// </summary>
+        /// <param name="columnsCount">O número máximo de células na linha.</param>
         public TableRow(int columnsCount)
         {
             _maxCellsCount = columnsCount;
         }
 
+        /// <summary>
+        /// Altera a cor de fundo de todas as células da linha.
+        /// </summary>
+        /// <param name="color">A cor de fundo desejada.</param>
+        /// <returns>A própria instância da linha.</returns>
         public TableRow ChangeRowColor(TableCell.BackColor color)
         {
             for (int i = 0; i < _cells.Count; i++)
@@ -464,6 +661,10 @@ namespace Fisco.Component
             return this;
         }
 
+        /// <summary>
+        /// Adiciona uma célula à linha.
+        /// </summary>
+        /// <param name="cell">A célula a ser adicionada.</param>
         public void AddCell(TableCell cell)
         {
             if (_maxCellsCount >= _addRows)
@@ -472,9 +673,13 @@ namespace Fisco.Component
                 _addRows++;
             }
             else
-                throw new CellTableOutOfMarginsException($"Não é possível adicionar mais uma célula à linha\nLimite máximo de {_maxCellsCount} células");
+                throw new CellTableOutOfMarginsException(TableConstants.MAX_CELL_ITENS_EXCEDED_MESSAGE.Replace("arg0", _maxCellsCount.ToString()));
         }
 
+        /// <summary>
+        /// Remove uma célula da linha.
+        /// </summary>
+        /// <param name="cell">A célula a ser removida.</param>
         public void RemoveCell(TableCell cell)
         {
             if (_cells.Remove(cell))
@@ -483,6 +688,10 @@ namespace Fisco.Component
             }
         }
 
+        /// <summary>
+        /// Remove uma célula da linha com base no índice.
+        /// </summary>
+        /// <param name="index">O índice da célula a ser removida.</param>
         public void RemoveCellAt(int index)
         {
             if (index >= 0 && index <= _cells.Count - 1)
@@ -491,9 +700,13 @@ namespace Fisco.Component
                 _addRows--;
             }
             else
-                throw new ArgumentOutOfRangeException(nameof(index), "O index deve estar dentro dos limites do array");
+                throw new ArgumentOutOfRangeException(nameof(index), Constants.INDEX_OUT_OF_RANGE_MESSAGE);
         }
 
+        /// <summary>
+        /// Obtém uma lista somente leitura das células da linha.
+        /// </summary>
+        /// <returns>Uma lista somente leitura das células da linha.</returns>
         public IReadOnlyList<TableCell> GetCells() => _cells;
     }
 }

@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Fisco.xml</DocumentationFile>
+    <RegisterForComInterop>false</RegisterForComInterop>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -42,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Component\Interfaces\IAuditable.cs" />
     <Compile Include="Component\Interfaces\IDrawable.cs" />
+    <Compile Include="Component\Interfaces\IValidate.cs" />
     <Compile Include="Component\Table.cs" />
     <Compile Include="Exceptions\Table\Cells\CellException.cs" />
     <Compile Include="Exceptions\Table\Cells\CellTableOutOfMarginsException.cs" />
@@ -59,8 +63,13 @@
     <Compile Include="Enumerator\ComponentFlags.cs" />
     <Compile Include="Exceptions\NoDeterministicsException.cs" />
     <Compile Include="Exceptions\OutOfBoundsException.cs" />
+    <Compile Include="Notify.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\BobineProps.cs" />
+    <Compile Include="Utility\Constants\Constants.cs" />
+    <Compile Include="Utility\Constants\Specific\FiscoPapperConstants.cs" />
+    <Compile Include="Utility\Constants\Specific\ImageConstants.cs" />
+    <Compile Include="Utility\Constants\Specific\TableConstants.cs" />
     <Compile Include="Utility\GraphicsGenerator.cs" />
   </ItemGroup>
   <ItemGroup />

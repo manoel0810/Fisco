@@ -1,18 +1,41 @@
 ﻿using Fisco.Component.Interfaces;
 using Fisco.Enumerator;
 using Fisco.Exceptions;
+using Fisco.Utility.Constants;
 using System;
 using System.Drawing;
 
 namespace Fisco.Component
 {
+
+    /// <summary>
+    /// Componente para representação de textos
+    /// </summary>
+
     public class Text : IFiscoComponent, IDisposable, IDrawable
     {
+        /// <summary>
+        /// Cor do pincel
+        /// </summary>
         public Brush Brush { get; private set; } = Brushes.Black;
+        /// <summary>
+        /// Fonte do texto
+        /// </summary>
         public Font TextFont { get; private set; }
+        /// <summary>
+        /// Conteúdo de texto
+        /// </summary>
         public string TextContent { get; private set; }
 
         private readonly ItemAlign _align;
+
+        /// <summary>
+        /// Cria um novo elemento gráfico do tipo <see cref="IFiscoComponent"/> para renderização com suporte para textos
+        /// </summary>
+        /// <param name="font">Fonte do texto</param>
+        /// <param name="text">Conteúdo</param>
+        /// <param name="align">Alinhamento</param>
+        /// <param name="brush">Pincel</param>
 
         public Text(Font font, string text, ItemAlign align, Brush brush)
         {
@@ -47,7 +70,7 @@ namespace Fisco.Component
                 return new Point(leftMargin, drawContext.TopOffSet + drawContext.GetStartHeight);
             }
 
-            throw new NoDeterministicsException("Nenhum ItemAlign válido foi passado");
+            throw new NoDeterministicsException(Constants.NO_ALIGN_PASSED);
         }
 
         private PointF GetTableCoordenate(ref Graphics g, Rectangle region)
@@ -63,7 +86,7 @@ namespace Fisco.Component
                 case ItemAlign.Right:
                     return new PointF(region.X + (region.Width - GetObjectRectangle(g, TextContent, TextFont).Width), Y);
                 default:
-                    throw new NoDeterministicsException("O alinhamento informado era inválido");
+                    throw new NoDeterministicsException(Constants.INVALID_ALIGN);
             }
         }
 
@@ -78,7 +101,7 @@ namespace Fisco.Component
             if (!drawContext.IgnoreOutBoundsError)
             {
                 if (MensureString(g, TextContent, TextFont).Width > drawContext.GetSizes()[0])
-                    throw new OutOfBoundsException("O comprimento para impressão é insuficiente para o componente");
+                    throw new OutOfBoundsException(Constants.NO_COMPONENT_FITS);
             }
 
             Rectangle r = GetObjectRectangle(g, TextContent, TextFont);
@@ -91,7 +114,7 @@ namespace Fisco.Component
             g.DrawString(TextContent, TextFont, Brush, GetTableCoordenate(ref g, region));
         }
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             TextFont.Dispose();
         }
