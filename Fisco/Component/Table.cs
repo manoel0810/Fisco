@@ -1,5 +1,6 @@
 ﻿using Fisco.Component.Interfaces;
 using Fisco.Enumerator;
+using Fisco.Exceptions;
 using Fisco.Exceptions.Table.Cells;
 using Fisco.Exceptions.Table.Columns;
 using Fisco.Exceptions.Table.Rows;
@@ -69,9 +70,13 @@ namespace Fisco.Component
         /// <param name="columnsCount">Número total de colunas</param>
         /// <param name="size">Tipo da bobina </param>
         /// <param name="ignoreOutBoundsError">Quando true, ignora áreas fora dos limites de desenho</param>
+        /// <exception cref="CoreException"></exception>
 
         public Table(int columnsCount, BobineSize size, bool ignoreOutBoundsError = false)
         {
+            if (columnsCount < TableConstants.MIN_TABLE_COLUMNS_COUNT)
+                throw new CoreException(TableConstants.MIN_TABLE_COLUMN_COUNT_MESSAGE, new ArgumentOutOfRangeException(nameof(columnsCount)));
+
             ColumnCount = columnsCount;
             _size = size;
             _ignoreOutBoundsError = ignoreOutBoundsError;
