@@ -48,6 +48,7 @@
     <Compile Include="Component\Interfaces\IDrawable.cs" />
     <Compile Include="Component\Interfaces\IValidate.cs" />
     <Compile Include="Component\Table.cs" />
+    <Compile Include="Exceptions\CoreException.cs" />
     <Compile Include="Exceptions\Table\Cells\CellException.cs" />
     <Compile Include="Exceptions\Table\Cells\CellTableOutOfMarginsException.cs" />
     <Compile Include="Exceptions\Table\Columns\ColumnException.cs" />
