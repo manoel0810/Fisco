@@ -122,7 +122,7 @@ namespace Fisco.Component
             if ((int)widths.Sum() > TableConstants.MAX_WIDTH_PERCENTAGE)
                 throw new InvalidWidthsColumnException(TableConstants.SUM_PERCENTAGE_MAX_MESSAGE);
 
-            if ((int)widths.Sum() < TableConstants.MAX_WIDTH_PERCENTAGE)
+            if (widths.Sum() < (float)TableConstants.MAX_WIDTH_PERCENTAGE)
                 throw new InvalidWidthsColumnException(TableConstants.SUM_PERCENTAGE_MIN_MESSAGE);
 
             UsePercentage = widths;
