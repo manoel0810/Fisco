@@ -144,12 +144,12 @@ namespace Fisco
 
         void IDisposable.Dispose()
         {
-            _g.Dispose();
+            _g?.Dispose();
             foreach (IFiscoComponent component in components)
                 component?.Dispose();
 
             components.Clear();
-            _img.Dispose();
+            _img?.Dispose();
 
             _disposed = true;
         }
