@@ -80,11 +80,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Fisco\Fisco.csproj">
-      <Project>{078563f0-65f6-4740-aa4d-2cea0e7c0c83}</Project>
-      <Name>Fisco</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
