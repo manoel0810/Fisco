@@ -74,7 +74,7 @@ namespace Fisco.Component
                 return new PointF(leftMargin, FiscoContext.GetStartHeight + FiscoContext.TopOffSet);
             }
 
-            throw new NoDeterministicsException(Constants.NO_ALIGN_PASSED);
+            throw new NoDeterministicsException(FiscoConstants.NO_ALIGN_PASSED);
         }
 
         void IDrawable.Draw(ref Graphics g, ref Context drawContext)

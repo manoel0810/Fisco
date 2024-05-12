@@ -406,7 +406,7 @@ namespace Fisco.Component
                     _rows.RemoveAt(index);
                 }
                 else
-                    throw new ArgumentOutOfRangeException(nameof(index), Constants.INDEX_OUT_OF_RANGE_MESSAGE);
+                    throw new ArgumentOutOfRangeException(nameof(index), FiscoConstants.INDEX_OUT_OF_RANGE_MESSAGE);
             }
         }
 
@@ -494,7 +494,7 @@ namespace Fisco.Component
                     _columns.RemoveAt(index);
                 }
                 else
-                    throw new ArgumentOutOfRangeException(nameof(index), Constants.INDEX_OUT_OF_RANGE_MESSAGE);
+                    throw new ArgumentOutOfRangeException(nameof(index), FiscoConstants.INDEX_OUT_OF_RANGE_MESSAGE);
             }
         }
     }
@@ -700,7 +700,7 @@ namespace Fisco.Component
                 _addRows--;
             }
             else
-                throw new ArgumentOutOfRangeException(nameof(index), Constants.INDEX_OUT_OF_RANGE_MESSAGE);
+                throw new ArgumentOutOfRangeException(nameof(index), FiscoConstants.INDEX_OUT_OF_RANGE_MESSAGE);
         }
 
         /// <summary>

@@ -98,6 +98,9 @@ namespace Fisco
             _renderedImage = _img;
             _rendered = _renderedImage != null;
 
+            var cut = GraphicsGenerator.ImageTrim(_img, new Point(), _context);
+            _img = cut ?? _img;
+
             return _img;
         }
 
