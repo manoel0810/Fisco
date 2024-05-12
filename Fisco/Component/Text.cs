@@ -70,7 +70,7 @@ namespace Fisco.Component
                 return new Point(leftMargin, drawContext.TopOffSet + drawContext.GetStartHeight);
             }
 
-            throw new NoDeterministicsException(Constants.NO_ALIGN_PASSED);
+            throw new NoDeterministicsException(FiscoConstants.NO_ALIGN_PASSED);
         }
 
         private PointF GetTableCoordenate(ref Graphics g, Rectangle region)
@@ -86,7 +86,7 @@ namespace Fisco.Component
                 case ItemAlign.Right:
                     return new PointF(region.X + (region.Width - GetObjectRectangle(g, TextContent, TextFont).Width), Y);
                 default:
-                    throw new NoDeterministicsException(Constants.INVALID_ALIGN);
+                    throw new NoDeterministicsException(FiscoConstants.INVALID_ALIGN);
             }
         }
 
@@ -101,7 +101,7 @@ namespace Fisco.Component
             if (!drawContext.IgnoreOutBoundsError)
             {
                 if (MensureString(g, TextContent, TextFont).Width > drawContext.GetSizes()[0])
-                    throw new OutOfBoundsException(Constants.NO_COMPONENT_FITS);
+                    throw new OutOfBoundsException(FiscoConstants.NO_COMPONENT_FITS);
             }
 
             Rectangle r = GetObjectRectangle(g, TextContent, TextFont);

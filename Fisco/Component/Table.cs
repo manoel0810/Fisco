@@ -70,12 +70,12 @@ namespace Fisco.Component
         /// <param name="columnsCount">Número total de colunas</param>
         /// <param name="size">Tipo da bobina </param>
         /// <param name="ignoreOutBoundsError">Quando true, ignora áreas fora dos limites de desenho</param>
-        /// <exception cref="CoreException"></exception>
+        /// <exception cref="FiscoException"></exception>
 
         public Table(int columnsCount, BobineSize size, bool ignoreOutBoundsError = false)
         {
             if (columnsCount < TableConstants.MIN_TABLE_COLUMNS_COUNT)
-                throw new CoreException(TableConstants.MIN_TABLE_COLUMN_COUNT_MESSAGE, new ArgumentOutOfRangeException(nameof(columnsCount)));
+                throw new FiscoException(TableConstants.MIN_TABLE_COLUMN_COUNT_MESSAGE, new ArgumentOutOfRangeException(nameof(columnsCount)));
 
             ColumnCount = columnsCount;
             _size = size;
@@ -411,7 +411,7 @@ namespace Fisco.Component
                     _rows.RemoveAt(index);
                 }
                 else
-                    throw new ArgumentOutOfRangeException(nameof(index), Constants.INDEX_OUT_OF_RANGE_MESSAGE);
+                    throw new ArgumentOutOfRangeException(nameof(index), FiscoConstants.INDEX_OUT_OF_RANGE_MESSAGE);
             }
         }
 
@@ -499,7 +499,7 @@ namespace Fisco.Component
                     _columns.RemoveAt(index);
                 }
                 else
-                    throw new ArgumentOutOfRangeException(nameof(index), Constants.INDEX_OUT_OF_RANGE_MESSAGE);
+                    throw new ArgumentOutOfRangeException(nameof(index), FiscoConstants.INDEX_OUT_OF_RANGE_MESSAGE);
             }
         }
     }
@@ -705,7 +705,7 @@ namespace Fisco.Component
                 _addRows--;
             }
             else
-                throw new ArgumentOutOfRangeException(nameof(index), Constants.INDEX_OUT_OF_RANGE_MESSAGE);
+                throw new ArgumentOutOfRangeException(nameof(index), FiscoConstants.INDEX_OUT_OF_RANGE_MESSAGE);
         }
 
         /// <summary>

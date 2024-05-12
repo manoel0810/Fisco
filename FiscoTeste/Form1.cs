@@ -25,7 +25,7 @@ namespace FiscoTeste
 
         private void InitObject()
         {
-            Sample1();
+            Sample2();
         }
 
         private void PrintPage(Image i)
