@@ -8,5 +8,15 @@ namespace Fisco.Exceptions
         {
 
         }
+
+        public FiscoException(string message, Exception exception) : base(message, exception)
+        {
+
+        }
+
+        public FiscoException()
+        {
+            
+        }
     }
 }
