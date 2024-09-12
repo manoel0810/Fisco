@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiscoTeste", "FiscoTeste\Fi
 		{078563F0-65F6-4740-AA4D-2CEA0E7C0C83} = {078563F0-65F6-4740-AA4D-2CEA0E7C0C83}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiscoCore", "FiscoCore\FiscoCore.csproj", "{31CDCACB-AB2C-4480-8F73-0E8C233EA233}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiscoCoreTeste", "FiscoCoreTeste\FiscoCoreTeste.csproj", "{76158F6D-01CC-43B9-A6CA-47B112444A61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +28,14 @@ Global
 		{35841BCA-8172-4C73-BD3F-76C054DE1EE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35841BCA-8172-4C73-BD3F-76C054DE1EE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35841BCA-8172-4C73-BD3F-76C054DE1EE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76158F6D-01CC-43B9-A6CA-47B112444A61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76158F6D-01CC-43B9-A6CA-47B112444A61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76158F6D-01CC-43B9-A6CA-47B112444A61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76158F6D-01CC-43B9-A6CA-47B112444A61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
