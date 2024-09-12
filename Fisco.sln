@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fisco", "Fisco\Fisco.csproj", "{078563F0-65F6-4740-AA4D-2CEA0E7C0C83}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiscoTeste", "FiscoTeste\FiscoTeste.csproj", "{35841BCA-8172-4C73-BD3F-76C054DE1EE6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{078563F0-65F6-4740-AA4D-2CEA0E7C0C83} = {078563F0-65F6-4740-AA4D-2CEA0E7C0C83}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -131,7 +131,7 @@ LOCAL.....: São José do Egito - PE";
 
             try
             {
-                using (FiscoPapper fisco = new FiscoPapper(BobineSize._80x297mm, 0, 10, true))
+                using (FiscoPapper fisco = new FiscoPapper(BobineSize._80x297mm, 0, 10, false))
                 {
                     Table t = new Table(4, BobineSize._80x297mm)
                     {
@@ -155,7 +155,7 @@ LOCAL.....: São José do Egito - PE";
                         t.Columns.Add(tc);
                     }
 
-                    for (int i = 0; i < 40; i++)
+                    for (int i = 0; i < 100; i++)
                     {
                         TableRow row = new TableRow(4);
                         for (int j = 0; j < 4; j++)

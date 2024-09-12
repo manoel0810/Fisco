@@ -308,6 +308,9 @@ namespace Fisco.Component
                 var regions = CreateGridLineRegion(rowHeight);
                 int e = 0;
 
+                if (!_ignoreOutBoundsError && rowHeight > _tableBitmap.Height - _tableRealHeight)
+                    throw new OutOfBoundsException(FiscoConstants.NO_COMPONENT_FITS);
+
                 foreach (Rectangle rec in regions)
                 {
                     var tableElement = cells[e++];
