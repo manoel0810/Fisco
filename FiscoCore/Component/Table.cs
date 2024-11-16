@@ -8,6 +8,7 @@ using Fisco.Utility;
 using Fisco.Utility.Constants;
 using Fisco.Utility.Constants.Specific;
 using SkiaSharp;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace Fisco.Component
@@ -56,6 +57,20 @@ namespace Fisco.Component
         private int _currentYPosition = 0;
 
         private Point GetCurrentPosition() => new Point(_currentXPosition, _currentYPosition);
+
+        /// <summary>
+        /// X == right Y == bottom
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        private Point GetRightBottomAbsolutePosition(float width, float height)
+        {
+            float bottom = _tableBitmap!.Height - (_currentYPosition + height);
+            float right = _tableBitmap.Width - (_currentXPosition + width);
+
+            return new Point((int)right, (int)bottom);
+        }
 
         //private Point GetNewPointFromVector(Point unit) => new Point(_currentXPosition - unit.X, _currentYPosition - unit.Y);
 
@@ -152,7 +167,7 @@ namespace Fisco.Component
 
         private void UpdateXPosition(SKRect rectangle)
         {
-            _currentXPosition += (int)rectangle.Width;
+            _currentXPosition += Math.Abs((int)rectangle.Width);
         }
 
         private void NextRow(SKRect rectangle)
@@ -165,11 +180,11 @@ namespace Fisco.Component
         {
             SKPoint[] points =
             {
-                new(region.Left, region.Top),
-                new(region.Left, region.Bottom),
-                new(region.Right, region.Bottom),
-                new(region.Right, region.Top),
-                new(region.Left, region.Top),
+                new(Math.Abs(region.Left), Math.Abs(region.Top)),
+                new(Math.Abs(region.Left), Math.Abs(region.Bottom)),
+                new(Math.Abs(region.Right), Math.Abs(region.Bottom)),
+                new(Math.Abs(region.Right), Math.Abs(region.Top)),
+                new(Math.Abs(region.Left), Math.Abs(region.Top)),
             };
 
             if (ui != null)
@@ -251,10 +266,16 @@ namespace Fisco.Component
             }
 
             i = 0;
+            maxHeight *= 2;
             _tableRealHeight += maxHeight;
             foreach (var column in Columns.GetColumns())
             {
-                var rec = new SKRect(GetCurrentPosition().X, GetCurrentPosition().Y, avaibleColumnSizes[i], maxHeight);
+                var absolutePos = GetCurrentPosition();
+                var rec = new SKRect(absolutePos.X, absolutePos.Y, absolutePos.X + avaibleColumnSizes[i], maxHeight);
+
+#if DEBUG
+                Debug.WriteLine($"ABS_POS: ({absolutePos}) || Rect → (left:{rec.Left}, top:{rec.Top}, right:{rec.Right}, bottom:{rec.Bottom})");
+#endif
                 if (column.DrawBackColor)
                     DrawRegion(rec, Columns.BackColor);
 
@@ -319,6 +340,7 @@ namespace Fisco.Component
                     }
                 }
 
+                rowHeight *= 2;
                 var regions = CreateGridLineRegion(rowHeight);
                 int e = 0;
 

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             View = new PictureBox();
+            Salvar = new Button();
             ((System.ComponentModel.ISupportInitialize)View).BeginInit();
             SuspendLayout();
             // 
@@ -38,14 +39,26 @@
             View.Location = new Point(20, 35);
             View.Name = "View";
             View.Size = new Size(461, 654);
+            View.SizeMode = PictureBoxSizeMode.Zoom;
             View.TabIndex = 0;
             View.TabStop = false;
+            // 
+            // Salvar
+            // 
+            Salvar.Location = new Point(369, 707);
+            Salvar.Name = "Salvar";
+            Salvar.Size = new Size(112, 34);
+            Salvar.TabIndex = 1;
+            Salvar.Text = "Salvar";
+            Salvar.UseVisualStyleBackColor = true;
+            Salvar.Click += Salvar_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(501, 725);
+            ClientSize = new Size(501, 763);
+            Controls.Add(Salvar);
             Controls.Add(View);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -61,5 +74,6 @@
         #endregion
 
         private PictureBox View;
+        private Button Salvar;
     }
 }

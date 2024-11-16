@@ -7,6 +7,8 @@ namespace FiscoCoreTeste
 {
     public partial class Form1 : Form
     {
+
+        private SKImage? ImagemRenderizada {  get; set; }
         public Form1()
         {
             InitializeComponent();
@@ -19,7 +21,48 @@ namespace FiscoCoreTeste
 
         private void InitObject()
         {
-            Sample1();
+            Sample2();
+        }
+
+        private void Teste()
+        {
+            SKImage img;
+            System.Drawing.Image? _bmp;
+
+            using (FiscoPapper fisco = new(BobineSize._80x297mm, 0, 10, true))
+            {
+                Text H1 = new(new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold)), "Teste espacamento", ItemAlign.Left, SKColors.Black);
+                fisco.AddComponent(H1);
+
+                H1 = new(new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold)), "Teste espacamento", ItemAlign.Center, SKColors.Black);
+                fisco.AddComponent(H1);
+
+                H1 = new(new SKFont(SKTypeface.FromFamilyName("Arial", SKFontStyle.Bold)), "Teste espacamento", ItemAlign.Right, SKColors.Black);
+                fisco.AddComponent(H1);
+
+                var original = SKBitmap.Decode("D:\\a.png");
+                var resized = new SKBitmap(100, 100);
+
+                original.ScalePixels(resized, SKFilterQuality.High);
+
+                Fisco.Component.Image logo = new Fisco.Component.Image(SKImage.FromBitmap(resized), ItemAlign.Left);
+                fisco.AddComponent(logo);
+
+                logo = new Fisco.Component.Image(SKImage.FromBitmap(resized), ItemAlign.Center);
+                fisco.AddComponent(logo);
+
+                logo = new Fisco.Component.Image(SKImage.FromBitmap(resized), ItemAlign.Right);
+                fisco.AddComponent(logo);
+
+
+                img = fisco.Render();
+                ImagemRenderizada = img;
+                var stream = img.EncodedData.AsStream();
+                var bmp = Bitmap.FromStream(stream);
+                _bmp = (System.Drawing.Image)bmp.Clone();
+            }
+
+            View.Image = _bmp;
         }
 
         private void Sample1()
@@ -97,6 +140,82 @@ LOCAL.....: São José do Egito - PE";
             {
                 throw;
             }
+        }
+
+        private void Sample2()
+        {
+            SKImage img;
+            System.Drawing.Image? _bmp;
+
+            try
+            {
+                using (FiscoPapper fisco = new FiscoPapper(BobineSize._80x297mm, 0, 10, false))
+                {
+                    Table t = new Table(4, BobineSize._80x297mm)
+                    {
+                        RowWrap = true,
+                        TableLineColor = SKColors.Black
+                    };
+
+                    var font = new SKFont(SKTypeface.FromFamilyName("Arial", 4, 12, SKFontStyleSlant.Upright));
+
+                    float[] widths = new float[] { 40, 20, 20, 20 };
+                    t.SetPercentage(widths);
+                    t.Columns.BackColor = SKColors.White;
+                    t.Columns.ForeGroundColor = SKColors.Black;
+                    t.Columns.HeaderFont = font;
+
+                    for (int i = 0; i < t.ColumnCount; i++)
+                    {
+                        TableColumn tc = new TableColumn($"COL {i + 1}")
+                        {
+                            DrawBackColor = true,
+                        };
+
+                        t.Columns.Add(tc);
+                    }
+
+                    for (int i = 0; i < 20; i++)
+                    {
+                        TableRow row = new TableRow(4);
+                        for (int j = 0; j < 4; j++)
+                            row.AddCell(new TableCell(new Text(font, $"({i}, {j})", ItemAlign.Left, i % 2 == 0 ? SKColors.Black : SKColors.White), i % 2 == 0 ? TableCell.BackColor.None : TableCell.BackColor.Black));
+
+                        t.Rows.Add(row);
+                    }
+
+                    fisco.AddComponent(t);
+
+                    img = fisco.Render();
+                    ImagemRenderizada = img;
+
+                    var stream = img.EncodedData.AsStream();
+                    var bmp = Bitmap.FromStream(stream);
+                    _bmp = (System.Drawing.Image)bmp.Clone();
+                }
+
+                View.Image = _bmp;  
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private void Salvar_Click(object sender, EventArgs e)
+        {
+            if (ImagemRenderizada == null)
+                return;
+
+            using (var dados = ImagemRenderizada.Encode(SKEncodedImageFormat.Png, 100))
+            using (var stream = File.OpenWrite("D:\\saida.png"))
+            {
+                dados.SaveTo(stream);
+                //stream.Flush();
+                //stream.Close();
+            }
+
+            MessageBox.Show("Saved");
         }
     }
 }

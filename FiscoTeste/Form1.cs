@@ -155,7 +155,7 @@ LOCAL.....: São José do Egito - PE";
                         t.Columns.Add(tc);
                     }
 
-                    for (int i = 0; i < 100; i++)
+                    for (int i = 0; i < 20; i++)
                     {
                         TableRow row = new TableRow(4);
                         for (int j = 0; j < 4; j++)
