@@ -10,7 +10,6 @@ using Fisco.Utility.Constants.Specific;
 using SkiaSharp;
 using System.Diagnostics;
 using System.Drawing;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Fisco.Component
 {
@@ -144,13 +143,6 @@ namespace Fisco.Component
 
         void IDisposable.Dispose()
         {
-            using(StreamWriter writer = new StreamWriter("D:\\log.txt"))
-            {
-                dados.ForEach(x => writer.WriteLine(x));
-                writer.Flush();
-                writer.Close();
-            }
-
             GC.SuppressFinalize(this);
             _tableGraphics?.Dispose();
             _tableBitmap?.Dispose();
@@ -232,12 +224,6 @@ namespace Fisco.Component
             component.DrawInsideTable(ref _tableGraphics!, region);
         }
 
-        private static List<string> dados = [];
-        private static void Log(string text)
-        {
-            dados.Add(text);
-        }
-
         private void DrawHeader()
         {
             if (Columns.GetColumns().Count != ColumnCount)
@@ -253,8 +239,6 @@ namespace Fisco.Component
             {
                 string text = column.ColumnDisplayName;
                 var avaibleSize = GetRealSizeByPercentage(UsePercentage![i]);
-
-                Log($"TEXT: ({text}) || SizeRow → {avaibleSize}");
 
                 if (RowWrap)
                 {
@@ -289,10 +273,9 @@ namespace Fisco.Component
                 var absolutePos = GetCurrentPosition();
                 var rec = new SKRect(absolutePos.X, absolutePos.Y, absolutePos.X + avaibleColumnSizes[i], maxHeight);
 
-                var debug = $"ABS_POS: ({absolutePos}) || Rect → (left:{rec.Left}, top:{rec.Top}, right:{rec.Right}, bottom:{rec.Bottom})";
-                System.Diagnostics.Debug.WriteLine(debug);
-                Log(debug);
-
+#if DEBUG
+                Debug.WriteLine($"ABS_POS: ({absolutePos}) || Rect → (left:{rec.Left}, top:{rec.Top}, right:{rec.Right}, bottom:{rec.Bottom})");
+#endif
                 if (column.DrawBackColor)
                     DrawRegion(rec, Columns.BackColor);
 
@@ -370,7 +353,7 @@ namespace Fisco.Component
                     var uiElement = (IDrawable)(tableElement.Component);
 
                     DrawFrame(rec, tableElement);
-                    DrawComponent(uiElement, rec );
+                    DrawComponent(uiElement, rec);
                 }
 
                 _tableRealHeight += rowHeight;
