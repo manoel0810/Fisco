@@ -20,10 +20,12 @@ namespace Fisco
         private bool _disposed = false;
         private readonly List<IFiscoComponent> components = [];
 
+        private const string BACK_COLOR = "#ffffff";
+
         private void InitGraphics()
         {
             _img = GraphicsGenerator.GenerateBitmapField(_context);
-            canvas = GraphicsGenerator.GenerateGraphicsObject(ref _img, SKColor.Parse("#ffffff"));
+            canvas = GraphicsGenerator.GenerateGraphicsObject(ref _img, SKColor.Parse(BACK_COLOR));
 
             _context.Width = _img.Width;
             _context.Height = _img.Height;
@@ -83,7 +85,7 @@ namespace Fisco
             if (_rendered)
                 return _renderedImage!;
 
-            canvas!.Clear(SKColor.Parse("#ffffff"));
+            canvas!.Clear(SKColor.Parse(BACK_COLOR));
             foreach (IDrawable component in components.Cast<IDrawable>())
             {
                 component.Draw(ref canvas, ref _context);
@@ -96,7 +98,7 @@ namespace Fisco
             var cut = GraphicsGenerator.ImageTrim(_img!, new SKPoint(0, 0), _context);
             _img = cut ?? _img;
 
-            using (var data = _renderedImage!.Encode(SKEncodedImageFormat.Png, 100))
+            using (var data = _img!.Encode(SKEncodedImageFormat.Png, 100))
             {
                 if (data == null)
                 {

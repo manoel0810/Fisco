@@ -70,10 +70,20 @@ namespace Fisco.Component
             throw new NoDeterministicsException(FiscoConstants.NO_ALIGN_PASSED);
         }
 
+        private float CalculateTopOffset(float percent)
+        {
+            return MeasureString(text, font).Height * (percent / 100);
+        }
+
+        private static float GetPercentage(float fontSize)
+        {
+            return (30 * fontSize) / 22;
+        }
+
         private SKPoint GetTableCoordenate(ref SKCanvas g, SKRect region)
         {
-            int margin = 0;
-            float y = region.Top;
+            int margin = 2;
+            float y = region.Top + (MeasureString(text, font).Height / 2) + CalculateTopOffset(GetPercentage(TextFont.Size));
 
             // Obtém a largura do texto usando SKPaint
             var textPaint = new SKPaint
