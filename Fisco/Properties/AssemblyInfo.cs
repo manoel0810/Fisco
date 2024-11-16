@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Fisco")]
 [assembly: AssemblyDescription("Fisco")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Lohayo")]
+[assembly: AssemblyCompany("Manoel Victor Silva Lira")]
 [assembly: AssemblyProduct("Fisco")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("Fisco")]
@@ -32,4 +32,4 @@ using System.Runtime.InteropServices;
 // usando o "*" como mostrado abaixo:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.1.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
