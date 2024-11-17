@@ -7,25 +7,32 @@ namespace Fisco.Utility
 {
     internal class GraphicsGenerator
     {
-        //const to 96 PPI
-        public const decimal PPI_FACTOR = 3.405m; //3.779527559055118m;
-        public const int SCALE = 1;
+        // Constante para conversão de mm para polegadas
+        private const decimal MM_TO_INCH = 25.4m;
 
         public static SKCanvas GenerateGraphicsObject(ref SKBitmap img, SKColor backColor)
         {
             SKCanvas canva = new(img);
             canva.Clear(backColor);
-
             return canva;
         }
 
-        public static SKBitmap GenerateBitmapField(Context context)
+        public static SKBitmap GenerateBitmapField(Context context, int dpi)
         {
-            float[] sizes = BobineProps.GetSizesUsingPPI(context.BobineSize);
-            float width = sizes[0] * SCALE;
-            float height = sizes[1] * SCALE;
+            if (dpi <= 0)
+                throw new ArgumentException("DPI deve ser maior que 0.", nameof(dpi));
 
-            SKImage papper = SKImage.Create(new SKImageInfo((int)width, (int)height));
+            // Dimensões do papel em mm
+            float[] sizes = BobineProps.GetSizesUsingPPI(context.BobineSize, dpi);
+            float widthInMm = sizes[0];
+            float heightInMm = sizes[1];
+
+            // Conversão de mm para pixels
+            int widthInPixels = (int)(widthInMm / (float)MM_TO_INCH * dpi);
+            int heightInPixels = (int)(heightInMm / (float)MM_TO_INCH * dpi);
+
+            // Criar bitmap com as dimensões calculadas
+            SKImage papper = SKImage.Create(new SKImageInfo((int)widthInMm, (int)heightInMm));
             SKBitmap map = SKBitmap.FromImage(papper);
 
             return map;
@@ -41,7 +48,7 @@ namespace Fisco.Utility
                     (int)xoy.X,
                     (int)xoy.Y,
                     (int)(xoy.X + context.Width),
-                    (int)(xoy.Y + context.GetStartHeight + GraphicsGeneratorConstants.SECURITY_MARGIN)
+                    (int)(xoy.Y + context.GetStartHeight + (GraphicsGeneratorConstants.SECURITY_MARGIN * 3))
                 );
 
                 using (var trimmedImage = new SKBitmap(trimRect.Width, trimRect.Height))
@@ -60,7 +67,6 @@ namespace Fisco.Utility
             }
         }
 
-
         private static void Validate(SKBitmap img, SKPoint xoy, Context context)
         {
             if (img == null || context == null)
@@ -74,7 +80,6 @@ namespace Fisco.Utility
 
             if (img.Width != context.Width || img.Height != context.Height)
                 throw new FiscoException(GraphicsGeneratorConstants.SIZES_NO_MATCH);
-
         }
     }
 }

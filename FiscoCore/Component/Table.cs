@@ -148,9 +148,9 @@ namespace Fisco.Component
             _tableBitmap?.Dispose();
         }
 
-        private void InitBitmap()
+        private void InitBitmap(Context context)
         {
-            _tableBitmap = GraphicsGenerator.GenerateBitmapField(new Context(_size, _ignoreOutBoundsError));
+            _tableBitmap = GraphicsGenerator.GenerateBitmapField(new Context(_size, _ignoreOutBoundsError, context.DPI), context.DPI);
             _tableGraphics = GraphicsGenerator.GenerateGraphicsObject(ref _tableBitmap, SKColors.White);
         }
 
@@ -211,7 +211,7 @@ namespace Fisco.Component
 
         private float GetRealWidth(bool incluseSecurityMargin = true)
         {
-            return BobineProps.GetSizesUsingPPI(_size)[0] - (incluseSecurityMargin ? TableConstants.SECURITY_MARGIN : 0);
+            return BobineProps.GetSizesUsingPPI(_size, 128)[0] - (incluseSecurityMargin ? TableConstants.SECURITY_MARGIN : 0);
         }
 
         private float GetRealSizeByPercentage(float percentage)
@@ -313,9 +313,9 @@ namespace Fisco.Component
         }
 
 
-        private void DrawTableGrid()
+        private void DrawTableGrid(Context context)
         {
-            InitBitmap();
+            InitBitmap(context);
             DrawHeader();
 
             foreach (TableRow row in Rows.GetRows())
@@ -362,7 +362,7 @@ namespace Fisco.Component
 
         void IDrawable.Draw(ref SKCanvas g, ref Context drawContext)
         {
-            DrawTableGrid();
+            DrawTableGrid(drawContext);
             g.DrawImage(SKImage.FromBitmap(_tableBitmap), 0, drawContext.GetStartHeight + drawContext.TopOffSet);
             drawContext.UpdateHeight(_tableRealHeight + drawContext.TopOffSet);
         }
@@ -556,7 +556,7 @@ namespace Fisco.Component
         }
 
         /// <summary>
-        /// Obtém o pincel <see cref="Brush"/> correspondente à cor de fundo da célula.
+        /// Obtém o pincel <see cref="SKColors"/> correspondente à cor de fundo da célula.
         /// </summary>
         /// <returns>O pincel correspondente à cor de fundo da célula.</returns>
         public SKColor GetBrush()

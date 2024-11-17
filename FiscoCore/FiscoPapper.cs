@@ -22,9 +22,9 @@ namespace Fisco
 
         private const string BACK_COLOR = "#ffffff";
 
-        private void InitGraphics()
+        private void InitGraphics(int dpi)
         {
-            _img = GraphicsGenerator.GenerateBitmapField(_context);
+            _img = GraphicsGenerator.GenerateBitmapField(_context, dpi);
             canvas = GraphicsGenerator.GenerateGraphicsObject(ref _img, SKColor.Parse(BACK_COLOR));
 
             _context.Width = _img.Width;
@@ -38,16 +38,20 @@ namespace Fisco
         /// <param name="leftOffset">Margem de recuo esquerdo</param>
         /// <param name="topOffset">Margem de recuo superior</param>
         /// <param name="igonreOutOfBounds">Quando true, ignora áreas fora dos limites de desenho</param>
+        /// <param name="dpi">DPI da impressora térmica</param>
 
-        public FiscoPapper(BobineSize size, int leftOffset, int topOffset, bool igonreOutOfBounds)
+        public FiscoPapper(BobineSize size, int leftOffset, int topOffset, bool igonreOutOfBounds, int dpi = 128)
         {
-            _context = new Context(size, igonreOutOfBounds)
+            if (dpi == 0)
+                throw new Exception("O DPI deve ser superior a zero");
+
+            _context = new Context(size, igonreOutOfBounds, dpi)
             {
                 LeftOffSet = leftOffset,
                 TopOffSet = topOffset,
             };
 
-            InitGraphics();
+            InitGraphics(dpi);
         }
 
         /// <summary>
@@ -55,11 +59,15 @@ namespace Fisco
         /// </summary>
         /// <param name="size">Define o tamanho da bobina térmica</param>
         /// <param name="igonreOutOfBounds">Quando true, ignora áreas fora dos limites de desenho</param>
+        /// <param name="dpi">DPI da impressora térmica</param>
 
-        public FiscoPapper(BobineSize size, bool igonreOutOfBounds)
+        public FiscoPapper(BobineSize size, bool igonreOutOfBounds, int dpi = 128)
         {
-            _context = new Context(size, igonreOutOfBounds);
-            InitGraphics();
+            if (dpi == 0)
+                throw new Exception("O DPI deve ser superior a zero");
+
+            _context = new Context(size, igonreOutOfBounds, dpi);
+            InitGraphics(dpi);
         }
 
         /// <summary>

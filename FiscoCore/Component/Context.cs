@@ -9,7 +9,12 @@ namespace Fisco.Component
 
     public class Context
     {
+
         private int _actualHeight = 0;
+        /// <summary>
+        /// DPI da impressora térmica
+        /// </summary>
+        public int DPI { get; private set; }
 
         /// <summary>
         /// Tipo de bobina
@@ -54,10 +59,12 @@ namespace Fisco.Component
         /// </summary>
         /// <param name="size">Define o tipo de bobina</param>
         /// <param name="ignoreOutBoundsError">Quando true, ignora áreas fora dos limites de desenho</param>
-        public Context(BobineSize size, bool ignoreOutBoundsError)
+        /// <param name="dpi">DPI da impressora térmica</param>
+        public Context(BobineSize size, bool ignoreOutBoundsError, int dpi)
         {
             BobineSize = size;
             IgnoreOutBoundsError = ignoreOutBoundsError;
+            DPI = dpi;
         }
 
         /// <summary>

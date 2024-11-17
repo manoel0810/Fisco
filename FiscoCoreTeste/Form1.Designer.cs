@@ -30,6 +30,7 @@
         {
             View = new PictureBox();
             Salvar = new Button();
+            Print = new Button();
             ((System.ComponentModel.ISupportInitialize)View).BeginInit();
             SuspendLayout();
             // 
@@ -53,11 +54,22 @@
             Salvar.UseVisualStyleBackColor = true;
             Salvar.Click += Salvar_Click;
             // 
+            // Print
+            // 
+            Print.Location = new Point(251, 707);
+            Print.Name = "Print";
+            Print.Size = new Size(112, 34);
+            Print.TabIndex = 1;
+            Print.Text = "Imprimir";
+            Print.UseVisualStyleBackColor = true;
+            Print.Click += Print_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(501, 763);
+            Controls.Add(Print);
             Controls.Add(Salvar);
             Controls.Add(View);
             FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -75,5 +87,6 @@
 
         private PictureBox View;
         private Button Salvar;
+        private Button Print;
     }
 }
