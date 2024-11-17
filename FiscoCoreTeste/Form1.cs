@@ -1,14 +1,17 @@
+using BarcodeStandard;
 using Fisco;
 using Fisco.Component;
 using Fisco.Enumerator;
 using SkiaSharp;
+using System.Drawing.Printing;
+using Image = Fisco.Component.Image;
 
 namespace FiscoCoreTeste
 {
     public partial class Form1 : Form
     {
 
-        private SKImage? ImagemRenderizada {  get; set; }
+        private SKImage? ImagemRenderizada { get; set; }
         public Form1()
         {
             InitializeComponent();
@@ -21,7 +24,7 @@ namespace FiscoCoreTeste
 
         private void InitObject()
         {
-            Sample2();
+            TesteComprovante();
         }
 
         private void Teste()
@@ -136,7 +139,7 @@ LOCAL.....: São José do Egito - PE";
 
                 View.Image = _bmp;
             }
-            catch (Exception e)
+            catch
             {
                 throw;
             }
@@ -157,7 +160,7 @@ LOCAL.....: São José do Egito - PE";
                         TableLineColor = SKColors.Black
                     };
 
-                    var font = new SKFont(SKTypeface.FromFamilyName("Arial", 4, 12, SKFontStyleSlant.Upright));
+                    var font = new SKFont(SKTypeface.FromFamilyName("Arial", 4, 8, SKFontStyleSlant.Upright), 16);
 
                     float[] widths = new float[] { 40, 20, 20, 20 };
                     t.SetPercentage(widths);
@@ -194,11 +197,11 @@ LOCAL.....: São José do Egito - PE";
                     _bmp = (System.Drawing.Image)bmp.Clone();
                 }
 
-                View.Image = _bmp;  
+                View.Image = _bmp;
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                throw;
             }
         }
 
@@ -216,6 +219,95 @@ LOCAL.....: São José do Egito - PE";
             }
 
             MessageBox.Show("Saved");
+        }
+
+        private void TesteComprovante()
+        {
+            SKImage img;
+            System.Drawing.Image? _bmp;
+
+            string bookCodeStr = "123456";
+            string userCodeStr = "654870";
+
+            using (FiscoPapper papper = new FiscoPapper(Fisco.Enumerator.BobineSize._80x297mm, 0, 36, true))
+            {
+                SKFont font = new SKFont(SKTypeface.FromFamilyName("Consolas", 4, 8, SKFontStyleSlant.Upright), 36);
+                Text actionText = new Text(font, "EMPRÉSTIMO", Fisco.Enumerator.ItemAlign.Center, SKColors.Black);
+
+                papper.AddComponent(actionText);
+                font = new SKFont(SKTypeface.FromFamilyName("Consolas", 4, 8, SKFontStyleSlant.Upright), 18);
+
+                Dictionary<string, string> data = new()
+                {
+                    { "TÍTULO......:", "HUAWEI" },
+                    { "CÓDIGO......:", bookCodeStr },
+                    { "SOLICITANTE.:", "Derick Calado de Queiroz" },
+                    { "MATRÍCULA...:", userCodeStr },
+                    { "USUÁRIO.....:", "dc.queiroz" },
+                    { "DATA HORA...:", DateTime.Now.ToShortDateString()},
+                    { "DEVOLUÇÃO...:", DateTime.Today.AddDays(12).ToShortDateString()}
+                };
+
+                foreach (var kvp in data)
+                {
+                    Text info = new Text(font, $"{kvp.Key} {kvp.Value}", Fisco.Enumerator.ItemAlign.Left, SKColors.Black);
+                    papper.AddComponent(info);
+                }
+
+                var bookCode = GenerateBarcode(bookCodeStr, new Size(200, 80));
+                var userCode = GenerateBarcode(userCodeStr, new Size(200, 80));
+
+                Image bookCodeImage = new Image(bookCode, Fisco.Enumerator.ItemAlign.Center);
+                Image userCodeImage = new Image(userCode, Fisco.Enumerator.ItemAlign.Center);
+
+                papper.AddComponent(bookCodeImage);
+                papper.AddComponent(userCodeImage);
+
+                img = papper.Render();
+                ImagemRenderizada = img;
+
+                var stream = img.EncodedData.AsStream();
+                var bmp = Bitmap.FromStream(stream);
+                _bmp = (System.Drawing.Image)bmp.Clone();
+
+                View.Image = _bmp;
+            }
+        }
+
+        private void Print_Click(object sender, EventArgs e)
+        {
+            if (ImagemRenderizada == null) return;
+
+            PaperSize papel = new PaperSize("Paper Roll", 80, 297);
+            PrintDocument doc = new PrintDocument();
+            doc.DefaultPageSettings.PaperSize = papel;
+            doc.PrintPage += (sender, e) =>
+            {
+                e.Graphics!.DrawImage(ImagemRenderizada.ToSystemDrawingImage(), new PointF(0, 0));
+            };
+
+
+            doc.Print();
+        }
+
+        private static SKImage GenerateBarcode(string code, Size dim)
+        {
+            var encode = new Barcode()
+            {
+                IncludeLabel = true
+            };
+
+            var encodedImage = encode.Encode(BarcodeStandard.Type.Code128, code, dim.Width, dim.Height);
+            return encodedImage;
+        }
+    }
+
+    internal static class SkiaSharpExtense
+    {
+        public static System.Drawing.Image ToSystemDrawingImage(this SKImage image)
+        {
+            var stream = image.EncodedData.AsStream();
+            return System.Drawing.Image.FromStream(stream);
         }
     }
 }

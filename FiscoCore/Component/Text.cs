@@ -37,14 +37,14 @@ namespace Fisco.Component
 
         private readonly ItemAlign _align = align;
 
-        private static SKSize MeasureString(string text, SKFont font)
+        private SKSize MeasureString()
         {
-            if (string.IsNullOrEmpty(text) || font == null)
+            if (string.IsNullOrEmpty(TextContent) || TextFont == null)
                 return SKSize.Empty;
 
-            using (var paint = new SKPaint { Typeface = font.Typeface, TextSize = font.Size })
+            using (var paint = new SKPaint { Typeface = TextFont.Typeface, TextSize = TextFont.Size })
             {
-                return new SKSize(paint.MeasureText(text), paint.FontMetrics.CapHeight + GraphicsGeneratorConstants.SECURITY_MARGIN);
+                return new SKSize(paint.MeasureText(TextContent), paint.FontMetrics.CapHeight + GraphicsGeneratorConstants.SECURITY_MARGIN);
             }
         }
 
@@ -72,7 +72,7 @@ namespace Fisco.Component
 
         private float CalculateTopOffset(float percent)
         {
-            return MeasureString(text, font).Height * (percent / 100);
+            return MeasureString().Height * (percent / 100);
         }
 
         private static float GetPercentage(float fontSize)
@@ -83,7 +83,7 @@ namespace Fisco.Component
         private SKPoint GetTableCoordenate(ref SKCanvas g, SKRect region)
         {
             int margin = 2;
-            float y = region.Top + (MeasureString(text, font).Height / 2) + CalculateTopOffset(GetPercentage(TextFont.Size));
+            float y = region.Top + (MeasureString().Height / 2) + CalculateTopOffset(GetPercentage(TextFont.Size));
 
             // Obtém a largura do texto usando SKPaint
             var textPaint = new SKPaint
@@ -108,9 +108,9 @@ namespace Fisco.Component
             return paint.MeasureText(text);
         }
 
-        private static Rectangle GetObjectRectangle(SKCanvas g, string text, SKFont font)
+        private Rectangle GetObjectRectangle(SKCanvas g)
         {
-            var size = MeasureString(text, font);
+            var size = MeasureString();
             return new Rectangle(0, 0, (int)size.Width, (int)size.Height);
         }
 
@@ -118,11 +118,11 @@ namespace Fisco.Component
         {
             if (!drawContext.IgnoreOutBoundsError)
             {
-                if (MeasureString(TextContent, TextFont).Width > drawContext.GetSizes()[0])
+                if (MeasureString().Width > drawContext.GetSizes()[0])
                     throw new OutOfBoundsException(FiscoConstants.NO_COMPONENT_FITS);
             }
 
-            Rectangle r = GetObjectRectangle(g, TextContent, TextFont);
+            Rectangle r = GetObjectRectangle(g);
             using (var paint = new SKPaint { Typeface = TextFont.Typeface, TextSize = TextFont.Size, Color = Brush })
             {
                 var coordenate = GetCoordenate(r, drawContext, _align);

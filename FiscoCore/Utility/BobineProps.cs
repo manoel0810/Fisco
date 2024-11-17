@@ -17,10 +17,19 @@ namespace Fisco.Utility
             return [w, h];
         }
 
-        public static float[] GetSizesUsingPPI(BobineSize size)
+        public static float[] GetSizesUsingPPI(BobineSize size, int dpi)
         {
+            if (dpi <= 0)
+                throw new ArgumentException("DPI deve ser maior que 0.", nameof(dpi));
+
+            // Obter tamanhos da bobina (em milímetros)
             var currentSize = GetSizes(size);
-            return [(float)(currentSize[0] * GraphicsGenerator.PPI_FACTOR), (float)(currentSize[1] * GraphicsGenerator.PPI_FACTOR)];
+
+            // Converter de milímetros para pixels usando DPI
+            float widthInPixels = (float)(currentSize[0] / 25.4 * dpi); // 25.4 mm por polegada
+            float heightInPixels = (float)(currentSize[1] / 25.4 * dpi);
+
+            return new float[] { widthInPixels, heightInPixels };
         }
     }
 }
