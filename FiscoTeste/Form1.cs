@@ -1,4 +1,4 @@
-﻿using Fisco;
+using Fisco;
 using Fisco.Component;
 using Fisco.Enumerator;
 using System;
@@ -30,14 +30,16 @@ namespace FiscoTeste
 
         private void PrintPage(Image i)
         {
-            PaperSize papel = new PaperSize("Custom Size", 80, 297); // 80mm de largura
+            int widthHundredths = (int)Math.Round(80 / 25.4 * 100);
+            int heightHundredths = (int)Math.Round(297 / 25.4 * 100);
+            PaperSize papel = new PaperSize("Custom Size", widthHundredths, heightHundredths);
             PrintDocument doc = new PrintDocument();
             doc.DefaultPageSettings.PaperSize = papel;
             doc.PrintPage += (sender, e) =>
             {
-                e.Graphics.DrawImage(i, new PointF(0, 0));
+                float printHeight = (float)i.Height / i.Width * widthHundredths;
+                e.Graphics.DrawImage(i, new RectangleF(0, 0, widthHundredths, printHeight));
             };
-
 
             doc.Print();
         }
@@ -113,7 +115,7 @@ LOCAL.....: São José do Egito - PE";
 
                     img = fisco.Render();
                     img = new Bitmap(img);
-                    
+
                 }
 
                 pictureBox1.Image = img;
@@ -177,14 +179,14 @@ LOCAL.....: São José do Egito - PE";
                 throw e;
             }
         }
-    
+
         private void Sample3()
         {
             Bitmap img;
 
             try
             {
-                using(FiscoPapper fisco = new FiscoPapper(BobineSize._80x297mm, false))
+                using (FiscoPapper fisco = new FiscoPapper(BobineSize._80x297mm, false))
                 {
                     Fisco.Component.Image well = new Fisco.Component.Image(new Bitmap(Image.FromFile("D:\\a.jpg"), new Size(250, 350)), ItemAlign.Center);
                     fisco.AddComponent(well);
@@ -196,11 +198,11 @@ LOCAL.....: São José do Egito - PE";
                 pictureBox1.Image = img;
                 image = img;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
         }
-        
+
     }
 }

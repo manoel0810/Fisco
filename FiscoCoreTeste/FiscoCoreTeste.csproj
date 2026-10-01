@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -10,11 +10,11 @@
 
   <ItemGroup>
     <PackageReference Include="BarcodeLib" Version="3.1.4" />
-    <PackageReference Include="SkiaSharp" Version="2.88.8" />
+    <PackageReference Include="SkiaSharp" Version="2.88.9" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FiscoCore\FiscoCore.csproj" />
+    <ProjectReference Include="..\Fisco\Fisco.csproj" />
   </ItemGroup>
 
 </Project>

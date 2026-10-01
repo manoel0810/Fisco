@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{A3D73C65-7281-4C5C-9A52-094191392A01}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Fisco</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Enumerator\ComponentFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\CoreException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\FiscoException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\NoDeterministicsException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\OutOfBoundsException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\Table\Cells\CellException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\Table\Cells\CellTableOutOfMarginsException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\Table\Columns\ColumnException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\Table\Columns\ColumnOutOfMarginException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\Table\Columns\InvalidWidthsColumnException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\Table\Rows\RowException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Notify.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Component\Interfaces\IFiscoComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Component\Interfaces\IAuditable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Component\Interfaces\IValidate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\BobineProps.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\Constants\FiscoConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\Constants\Specific\FiscoPapperConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\Constants\Specific\GraphicsGeneratorConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\Constants\Specific\ImageConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\Constants\Specific\TableConstants.cs" />
+  </ItemGroup>
+</Project>

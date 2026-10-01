@@ -26,8 +26,11 @@ A `Fisco.dll` é uma biblioteca desenvolvida para facilitar o uso de impressoras
   - Permite renderizar e imprimir imagens e texto com facilidade
 </details>
 
-## __(Os exemplos de uso são voltados para a versão 1.1.0 ou superior do .Net Framework 4.8)❗❗❗__
-> Para a versão voltada para o [.NET Core 8](https://dotnet.microsoft.com/en-us/download), a estrutura se mantém, trocando os objetos por seu equivalente no [SkiaSharp](https://github.com/mono/SkiaSharp)
+## Suporte e Versões
+O pacote NuGet unificado **`Fisco`** oferece suporte multi-target automático:
+- **.NET Framework 4.8**: utiliza `System.Drawing` (GDI+)
+- **.NET 8.0, 9.0 e 10.0**: utiliza [SkiaSharp](https://github.com/mono/SkiaSharp) (multi-plataforma)
+- **Código Compartilhado**: arquitetura modular com `Fisco.Shared` para enums, constantes, exceções e modelos.
 
 
 ## Componentes Principais
