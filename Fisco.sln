@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.10.12217.157 stable
+VisualStudioVersion = 18.10.12217.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fisco", "Fisco\Fisco.csproj", "{078563F0-65F6-4740-AA4D-2CEA0E7C0C83}"
 EndProject
@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiscoTeste", "FiscoTeste\Fi
 	ProjectSection(ProjectDependencies) = postProject
 		{078563F0-65F6-4740-AA4D-2CEA0E7C0C83} = {078563F0-65F6-4740-AA4D-2CEA0E7C0C83}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiscoCore", "FiscoCore\FiscoCore.csproj", "{31CDCACB-AB2C-4480-8F73-0E8C233EA233}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiscoCoreTeste", "FiscoCoreTeste\FiscoCoreTeste.csproj", "{76158F6D-01CC-43B9-A6CA-47B112444A61}"
 EndProject
@@ -50,18 +48,6 @@ Global
 		{35841BCA-8172-4C73-BD3F-76C054DE1EE6}.Release|x64.Build.0 = Release|Any CPU
 		{35841BCA-8172-4C73-BD3F-76C054DE1EE6}.Release|x86.ActiveCfg = Release|Any CPU
 		{35841BCA-8172-4C73-BD3F-76C054DE1EE6}.Release|x86.Build.0 = Release|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Debug|x64.Build.0 = Debug|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Debug|x86.Build.0 = Debug|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Release|Any CPU.Build.0 = Release|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Release|x64.ActiveCfg = Release|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Release|x64.Build.0 = Release|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Release|x86.ActiveCfg = Release|Any CPU
-		{31CDCACB-AB2C-4480-8F73-0E8C233EA233}.Release|x86.Build.0 = Release|Any CPU
 		{76158F6D-01CC-43B9-A6CA-47B112444A61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{76158F6D-01CC-43B9-A6CA-47B112444A61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76158F6D-01CC-43B9-A6CA-47B112444A61}.Debug|x64.ActiveCfg = Debug|Any CPU

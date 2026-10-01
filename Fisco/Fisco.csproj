@@ -1,41 +1,53 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0;net10.0;net48</TargetFrameworks>
     <RootNamespace>Fisco</RootNamespace>
     <AssemblyName>Fisco</AssemblyName>
+    <LangVersion>latest</LangVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Nullable>disable</Nullable>
-    <LangVersion>latest</LangVersion>
-    <Deterministic>true</Deterministic>
+    <NoWarn>$(NoWarn);1591</NoWarn>
 
-    <!-- NuGet Packaging Properties for Framework -->
+    <!-- Configurações do Pacote NuGet Unificado -->
     <PackageId>Fisco</PackageId>
-    <Version>1.2.0</Version>
+    <Version>2.0.0</Version>
     <Authors>Manoel Victor Silva Lira</Authors>
     <Company>Manoel Victor Silva Lira</Company>
     <Product>Fisco</Product>
-    <Title>Fisco.dll - Biblioteca para Impressoras Térmicas (.NET Framework)</Title>
-    <Description>Biblioteca para geração, renderização e impressão de documentos e cupons fiscais em impressoras térmicas (58mm e 80mm) para .NET Framework 4.8.</Description>
-    <PackageTags>thermal-printer;receipt;cupom-fiscal;printer;fisco;escpos</PackageTags>
+    <Title>Fisco.dll - Biblioteca para Impressoras Térmicas</Title>
+    <Description>Biblioteca de alto desempenho para geração, renderização e impressão de documentos e cupons fiscais em impressoras térmicas (58mm e 80mm). Suporta .NET Framework 4.8 (GDI+) e .NET Core 8.0, 9.0 e 10.0 (SkiaSharp multi-plataforma).</Description>
+    <PackageTags>thermal-printer;receipt;cupom-fiscal;printer;skiasharp;fisco;escpos</PackageTags>
     <PackageProjectUrl>https://github.com/manoel0810/Fisco</PackageProjectUrl>
     <RepositoryUrl>https://github.com/manoel0810/Fisco</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- Configurações específicas para .NET Framework 4.8 (GDI+) -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Compile Remove="Skia\**" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
+  <!-- Configurações específicas para .NET Core 8.0, 9.0 e 10.0 (SkiaSharp) -->
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net48'">
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net48'">
+    <Compile Remove="Gdi\**" />
+    <PackageReference Include="SkiaSharp" Version="2.88.9" />
+  </ItemGroup>
+
+  <!-- Código compartilhado -->
   <Import Project="..\Fisco.Shared\Fisco.Shared.projitems" Label="Shared" />
 
 </Project>
