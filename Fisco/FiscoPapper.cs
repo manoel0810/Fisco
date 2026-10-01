@@ -1,4 +1,4 @@
-﻿using Fisco.Component;
+using Fisco.Component;
 using Fisco.Component.Interfaces;
 using Fisco.Enumerator;
 using Fisco.Utility;
@@ -119,7 +119,9 @@ namespace Fisco
             try
             {
                 int[] sizes = BobineProps.GetSizes(_context.BobineSize);
-                PaperSize papel = new PaperSize("Custom Size", sizes[0], sizes[1]);
+                int widthHundredths = (int)Math.Round(sizes[0] / 25.4 * 100);
+                int heightHundredths = (int)Math.Round(sizes[1] / 25.4 * 100);
+                PaperSize papel = new PaperSize("Custom Size", widthHundredths, heightHundredths);
                 PrintDocument doc = new PrintDocument();
 
                 doc.DefaultPageSettings.PaperSize = papel;
@@ -127,7 +129,10 @@ namespace Fisco
                 {
                     var image = _renderedImage ?? Render();
                     if (image != null)
-                        e.Graphics.DrawImage(image, new PointF(0, 0));
+                    {
+                        float printableHeightHundredths = (float)image.Height / image.Width * widthHundredths;
+                        e.Graphics.DrawImage(image, new RectangleF(0, 0, widthHundredths, printableHeightHundredths));
+                    }
                     else
                         throw new Exception();
                 };

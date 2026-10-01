@@ -1,20 +1,17 @@
-﻿using Fisco.Component;
+using Fisco.Component;
 using Fisco.Exceptions;
 using Fisco.Utility.Constants.Specific;
 using SkiaSharp;
 
 namespace Fisco.Utility
 {
-    internal class GraphicsGenerator
+    internal static class GraphicsGenerator
     {
-        // Constante para conversão de mm para polegadas
-        private const decimal MM_TO_INCH = 25.4m;
-
         public static SKCanvas GenerateGraphicsObject(ref SKBitmap img, SKColor backColor)
         {
-            SKCanvas canva = new(img);
-            canva.Clear(backColor);
-            return canva;
+            SKCanvas canvas = new(img);
+            canvas.Clear(backColor);
+            return canvas;
         }
 
         public static SKBitmap GenerateBitmapField(Context context, int dpi)
@@ -22,18 +19,17 @@ namespace Fisco.Utility
             if (dpi <= 0)
                 throw new ArgumentException("DPI deve ser maior que 0.", nameof(dpi));
 
-            // Dimensões do papel em mm
-            float[] sizes = BobineProps.GetSizesUsingPPI(context.BobineSize, dpi);
-            float widthInMm = sizes[0];
-            float heightInMm = sizes[1];
+            float[] pixelSizes = BobineProps.GetSizesUsingPPI(context.BobineSize, dpi);
+            int width = (int)Math.Round(pixelSizes[0]);
+            int height = (int)Math.Round(pixelSizes[1]);
 
-            // Conversão de mm para pixels
-            int widthInPixels = (int)(widthInMm / (float)MM_TO_INCH * dpi);
-            int heightInPixels = (int)(heightInMm / (float)MM_TO_INCH * dpi);
+            var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var map = new SKBitmap(info);
 
-            // Criar bitmap com as dimensões calculadas
-            SKImage papper = SKImage.Create(new SKImageInfo((int)widthInMm, (int)heightInMm));
-            SKBitmap map = SKBitmap.FromImage(papper);
+            using (var canvas = new SKCanvas(map))
+            {
+                canvas.Clear(SKColors.White);
+            }
 
             return map;
         }
@@ -44,22 +40,28 @@ namespace Fisco.Utility
 
             try
             {
-                var trimRect = new SKRectI(
-                    (int)xoy.X,
-                    (int)xoy.Y,
-                    (int)(xoy.X + context.Width),
-                    (int)(xoy.Y + context.GetStartHeight + (GraphicsGeneratorConstants.SECURITY_MARGIN * 3))
-                );
+                int contentHeight = context.TopOffSet + context.GetStartHeight + GraphicsGeneratorConstants.SECURITY_MARGIN;
+                int targetHeight = Math.Min(contentHeight, img.Height);
+                int targetWidth = Math.Min(context.Width, img.Width);
 
-                using (var trimmedImage = new SKBitmap(trimRect.Width, trimRect.Height))
+                if (targetHeight <= 0 || targetWidth <= 0)
+                    return img;
+
+                int startX = Math.Clamp((int)xoy.X, 0, img.Width - 1);
+                int startY = Math.Clamp((int)xoy.Y, 0, img.Height - 1);
+                int rectWidth = Math.Min(targetWidth, img.Width - startX);
+                int rectHeight = Math.Min(targetHeight, img.Height - startY);
+
+                var trimRect = new SKRectI(startX, startY, startX + rectWidth, startY + rectHeight);
+                var trimmedImage = new SKBitmap(rectWidth, rectHeight);
+
+                using (var canvas = new SKCanvas(trimmedImage))
                 {
-                    using (var canvas = new SKCanvas(trimmedImage))
-                    {
-                        canvas.DrawBitmap(img, trimRect, new SKRect(0, 0, trimRect.Width, trimRect.Height));
-                    }
-
-                    return trimmedImage.Copy();
+                    canvas.Clear(SKColors.White);
+                    canvas.DrawBitmap(img, trimRect, new SKRect(0, 0, rectWidth, rectHeight));
                 }
+
+                return trimmedImage;
             }
             catch (OutOfMemoryException)
             {
@@ -69,8 +71,11 @@ namespace Fisco.Utility
 
         private static void Validate(SKBitmap img, SKPoint xoy, Context context)
         {
-            if (img == null || context == null)
-                throw new ArgumentNullException((img == null ? nameof(img) : nameof(context)));
+            if (img == null)
+                throw new ArgumentNullException(nameof(img));
+
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
 
             if (xoy.X < 0 || xoy.X > img.Width)
                 throw new ArgumentOutOfRangeException(nameof(xoy), xoy, GraphicsGeneratorConstants.oX_OUT_RANGE);

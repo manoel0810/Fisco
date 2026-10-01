@@ -83,12 +83,12 @@ namespace FiscoCoreTeste
                     fisco.AddComponent(H1);
 
                     string h = $@"
-USU¡RIO....: Manoel Victor S. Lira
-MATRÕCULA..: 60179
+USU√ÅRIO....: Manoel Victor S. Lira
+MATR√çCULA..: 60179
 
-REGISTRO..: N∫ 166548
+REGISTRO..: N¬∫ 166548
 DATA......: 04/03/2024
-LOCAL.....: S„o JosÈ do Egito - PE";
+LOCAL.....: S√£o Jos√© do Egito - PE";
 
                     H1 = new Text(new SKFont(SKTypeface.FromFamilyName("Consolas", SKFontStyle.Bold)), h, ItemAlign.Left, SKColors.Black);
                     fisco.AddComponent(H1);
@@ -101,7 +101,7 @@ LOCAL.....: S„o JosÈ do Egito - PE";
                     t.SetPercentage([10, 15, 75]);
                     t.Columns.HeaderFont = new SKFont(SKTypeface.FromFamilyName("Consolas", SKFontStyle.Bold));
 
-                    t.Columns.Add(new TableColumn("N∫"));
+                    t.Columns.Add(new TableColumn("N¬∫"));
                     t.Columns.Add(new TableColumn("CODE"));
                     t.Columns.Add(new TableColumn("TITLE"));
 
@@ -110,9 +110,9 @@ LOCAL.....: S„o JosÈ do Egito - PE";
                     {
                         new object[] { "1", "2654", "O Conto da Sereia Arhto" },
                         new object[] { "2", "7896", "A Arte da Guerra"},
-                        new object[] { "3", "1234", "O Senhor dos AnÈis"},
+                        new object[] { "3", "1234", "O Senhor dos An√©is"},
                         new object[] { "4", "5678", "Dom Quixote"},
-                        new object[] { "5", "4321", "Cem Anos de Solid„o"},
+                        new object[] { "5", "4321", "Cem Anos de Solid√£o"},
                     };
 
                     foreach (object[] obj in values.Cast<object[]>())
@@ -232,20 +232,20 @@ LOCAL.....: S„o JosÈ do Egito - PE";
             using (FiscoPapper papper = new FiscoPapper(Fisco.Enumerator.BobineSize._80x297mm, 0, 36, true))
             {
                 SKFont font = new SKFont(SKTypeface.FromFamilyName("Consolas", 4, 8, SKFontStyleSlant.Upright), 36);
-                Text actionText = new Text(font, "EMPR…STIMO", Fisco.Enumerator.ItemAlign.Center, SKColors.Black);
+                Text actionText = new Text(font, "EMPR√âSTIMO", Fisco.Enumerator.ItemAlign.Center, SKColors.Black);
 
                 papper.AddComponent(actionText);
                 font = new SKFont(SKTypeface.FromFamilyName("Consolas", 4, 8, SKFontStyleSlant.Upright), 18);
 
                 Dictionary<string, string> data = new()
                 {
-                    { "TÕTULO......:", "HUAWEI" },
-                    { "C”DIGO......:", bookCodeStr },
+                    { "T√çTULO......:", "HUAWEI" },
+                    { "C√ìDIGO......:", bookCodeStr },
                     { "SOLICITANTE.:", "Derick Calado de Queiroz" },
-                    { "MATRÕCULA...:", userCodeStr },
-                    { "USU¡RIO.....:", "dc.queiroz" },
+                    { "MATR√çCULA...:", userCodeStr },
+                    { "USU√ÅRIO.....:", "dc.queiroz" },
                     { "DATA HORA...:", DateTime.Now.ToShortDateString()},
-                    { "DEVOLU«√O...:", DateTime.Today.AddDays(12).ToShortDateString()}
+                    { "DEVOLU√á√ÉO...:", DateTime.Today.AddDays(12).ToShortDateString()}
                 };
 
                 foreach (var kvp in data)
@@ -278,14 +278,17 @@ LOCAL.....: S„o JosÈ do Egito - PE";
         {
             if (ImagemRenderizada == null) return;
 
-            PaperSize papel = new PaperSize("Paper Roll", 80, 297);
+            int widthHundredths = (int)Math.Round(80 / 25.4 * 100);
+            int heightHundredths = (int)Math.Round(297 / 25.4 * 100);
+            PaperSize papel = new PaperSize("Paper Roll", widthHundredths, heightHundredths);
             PrintDocument doc = new PrintDocument();
             doc.DefaultPageSettings.PaperSize = papel;
             doc.PrintPage += (sender, e) =>
             {
-                e.Graphics!.DrawImage(ImagemRenderizada.ToSystemDrawingImage(), new PointF(0, 0));
+                using var sysImg = ImagemRenderizada.ToSystemDrawingImage();
+                float printHeight = (float)sysImg.Height / sysImg.Width * widthHundredths;
+                e.Graphics!.DrawImage(sysImg, new RectangleF(0, 0, widthHundredths, printHeight));
             };
-
 
             doc.Print();
         }

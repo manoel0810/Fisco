@@ -42,7 +42,7 @@ namespace Fisco
 
         public FiscoPapper(BobineSize size, int leftOffset, int topOffset, bool igonreOutOfBounds, int dpi = 128)
         {
-            if (dpi == 0)
+            if (dpi <= 0)
                 throw new Exception("O DPI deve ser superior a zero");
 
             _context = new Context(size, igonreOutOfBounds, dpi)

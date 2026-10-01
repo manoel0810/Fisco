@@ -1,4 +1,4 @@
-﻿using Fisco.Component;
+using Fisco.Component;
 using Fisco.Exceptions;
 using Fisco.Utility.Constants;
 using Fisco.Utility.Constants.Specific;
@@ -41,17 +41,25 @@ namespace Fisco.Utility
         {
             Validade(img, xoy, context);
 
-            unsafe
+            try
             {
-                try
-                {
-                    var trim = img.Clone(new Rectangle(xoy, new Size(context.Width, context.GetStartHeight + GraphicsGeneratorConstants.SECURITY_MARGING)), img.PixelFormat);
-                    return trim;
-                }
-                catch (OutOfMemoryException)
-                {
-                    return null;
-                }
+                int contentHeight = context.TopOffSet + context.GetStartHeight + GraphicsGeneratorConstants.SECURITY_MARGING;
+                int targetHeight = Math.Min(contentHeight, img.Height);
+                int targetWidth = Math.Min(context.Width, img.Width);
+
+                if (targetHeight <= 0 || targetWidth <= 0)
+                    return img;
+
+                int startX = Math.Max(0, Math.Min(xoy.X, img.Width - 1));
+                int startY = Math.Max(0, Math.Min(xoy.Y, img.Height - 1));
+                int rectWidth = Math.Min(targetWidth, img.Width - startX);
+                int rectHeight = Math.Min(targetHeight, img.Height - startY);
+
+                return img.Clone(new Rectangle(startX, startY, rectWidth, rectHeight), img.PixelFormat);
+            }
+            catch (OutOfMemoryException)
+            {
+                return null;
             }
         }
 
@@ -68,7 +76,6 @@ namespace Fisco.Utility
 
             if (img.Width != context.Width || img.Height != context.Height)
                 throw new FiscoException(GraphicsGeneratorConstants.SIZES_NO_MATCH);
-
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Fisco.Component.Interfaces;
+using Fisco.Component.Interfaces;
 using Fisco.Enumerator;
 using Fisco.Exceptions;
 using Fisco.Exceptions.Table.Cells;
@@ -18,7 +18,7 @@ namespace Fisco.Component
     /// Componente para representação de tabelas
     /// </summary>
 
-    public class Table : IFiscoComponent, IDrawable
+    public class Table : IFiscoComponent, IDisposable, IDrawable
     {
         private Bitmap _tableBitmap;
         private Graphics _tableGraphics;
@@ -339,7 +339,7 @@ namespace Fisco.Component
         {
             DrawTableGrid();
             g.DrawImage(_tableBitmap, new Point(0, drawContext.GetStartHeight + drawContext.TopOffSet));
-            drawContext.UpdateHeight(_tableRealHeight + drawContext.TopOffSet);
+            drawContext.UpdateHeight(_tableRealHeight);
         }
 
         void IDrawable.DrawInsideTable(ref Graphics g, Rectangle region)

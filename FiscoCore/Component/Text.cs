@@ -1,155 +1,178 @@
-﻿using Fisco.Component.Interfaces;
+using Fisco.Component.Interfaces;
 using Fisco.Enumerator;
 using Fisco.Exceptions;
 using Fisco.Utility.Constants;
-using Fisco.Utility.Constants.Specific;
 using SkiaSharp;
-using System.Drawing;
 
 namespace Fisco.Component
 {
-
     /// <summary>
-    /// Componente para representação de textos
+    /// Componente para representação de textos com suporte para SkiaSharp
     /// </summary>
-    /// <remarks>
-    /// Cria um novo elemento gráfico do tipo <see cref="IFiscoComponent"/> para renderização com suporte para textos
-    /// </remarks>
-    /// <param name="font">Fonte do texto</param>
-    /// <param name="text">Conteúdo</param>
-    /// <param name="align">Alinhamento</param>
-    /// <param name="brush">Pincel</param>
-
-    public class Text(SKFont font, string text, ItemAlign align, SKColor brush) : IFiscoComponent, IDisposable, IDrawable
+    public class Text : IFiscoComponent, IDisposable, IDrawable
     {
         /// <summary>
         /// Cor do pincel
         /// </summary>
-        public SKColor Brush { get; private set; } = brush;
+        public SKColor Brush { get; private set; }
         /// <summary>
         /// Fonte do texto
         /// </summary>
-        public SKFont TextFont { get; private set; } = font;
+        public SKFont TextFont { get; private set; }
         /// <summary>
         /// Conteúdo de texto
         /// </summary>
-        public string TextContent { get; private set; } = text;
+        public string TextContent { get; private set; }
 
-        private readonly ItemAlign _align = align;
+        private readonly ItemAlign _align;
+
+        /// <summary>
+        /// Cria um novo elemento de texto
+        /// </summary>
+        public Text(SKFont font, string text, ItemAlign align, SKColor brush)
+        {
+            TextFont = font ?? throw new ArgumentNullException(nameof(font));
+            TextContent = text ?? string.Empty;
+            _align = align;
+            Brush = brush;
+        }
+
+        private string[] GetLines()
+        {
+            if (string.IsNullOrEmpty(TextContent))
+                return [];
+
+            return TextContent.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
+        }
 
         private SKSize MeasureString()
         {
             if (string.IsNullOrEmpty(TextContent) || TextFont == null)
                 return SKSize.Empty;
 
-            using (var paint = new SKPaint { Typeface = TextFont.Typeface, TextSize = TextFont.Size })
-            {
-                return new SKSize(paint.MeasureText(TextContent), paint.FontMetrics.CapHeight + GraphicsGeneratorConstants.SECURITY_MARGIN);
-            }
-        }
+            using var paint = new SKPaint { Typeface = TextFont.Typeface, TextSize = TextFont.Size };
+            var metrics = paint.FontMetrics;
+            float lineSpacing = metrics.Descent - metrics.Ascent + metrics.Leading;
+            if (lineSpacing <= 0)
+                lineSpacing = TextFont.Size * 1.2f;
 
-        static PointF GetCoordenate(Rectangle objectSize, Context drawContext, ItemAlign itemAlign)
-        {
-            if (itemAlign == ItemAlign.Left)
+            var lines = GetLines();
+            if (lines.Length == 0)
+                return SKSize.Empty;
+
+            float maxWidth = 0;
+            foreach (var line in lines)
             {
-                return new Point(drawContext.LeftOffSet, drawContext.TopOffSet + drawContext.GetStartHeight);
-            }
-            else if (itemAlign == ItemAlign.Center)
-            {
-                //ignore left margin
-                int startPoint = (drawContext.GetSizes()[0] - objectSize.Width) / 2;
-                return new Point(startPoint, drawContext.TopOffSet + drawContext.GetStartHeight);
-            }
-            else if (itemAlign == ItemAlign.Right)
-            {
-                //ignore left margin
-                int leftMargin = drawContext.GetSizes()[0] - objectSize.Width;
-                return new Point(leftMargin, drawContext.TopOffSet + drawContext.GetStartHeight);
+                float w = paint.MeasureText(line);
+                if (w > maxWidth)
+                    maxWidth = w;
             }
 
-            throw new NoDeterministicsException(FiscoConstants.NO_ALIGN_PASSED);
-        }
+            float textAscentDescent = metrics.Descent - metrics.Ascent;
+            float totalHeight = lines.Length <= 1
+                ? textAscentDescent
+                : ((lines.Length - 1) * lineSpacing + textAscentDescent);
 
-        private float CalculateTopOffset(float percent)
-        {
-            return MeasureString().Height * (percent / 100);
-        }
-
-        private static float GetPercentage(float fontSize)
-        {
-            return (30 * fontSize) / 22;
-        }
-
-        private SKPoint GetTableCoordenate(ref SKCanvas g, SKRect region)
-        {
-            int margin = 2;
-            float y = region.Top + (MeasureString().Height / 2) + CalculateTopOffset(GetPercentage(TextFont.Size));
-
-            // Obtém a largura do texto usando SKPaint
-            var textPaint = new SKPaint
-            {
-                Typeface = TextFont.Typeface,
-                TextSize = TextFont.Size
-            };
-
-            float textWidth = GetTextWidth(TextContent, textPaint);
-
-            return _align switch
-            {
-                ItemAlign.Left => new SKPoint(region.Left + margin, y),
-                ItemAlign.Center => new SKPoint(region.Left + ((region.Width - textWidth) / 2), y),
-                ItemAlign.Right => new SKPoint(region.Right - textWidth, y),
-                _ => throw new NoDeterministicsException(FiscoConstants.INVALID_ALIGN),
-            };
-        }
-
-        private static float GetTextWidth(string text, SKPaint paint)
-        {
-            return paint.MeasureText(text);
-        }
-
-        private Rectangle GetObjectRectangle(SKCanvas g)
-        {
-            var size = MeasureString();
-            return new Rectangle(0, 0, (int)size.Width, (int)size.Height);
+            return new SKSize(maxWidth, totalHeight);
         }
 
         void IDrawable.Draw(ref SKCanvas g, ref Context drawContext)
         {
+            var size = MeasureString();
             if (!drawContext.IgnoreOutBoundsError)
             {
-                if (MeasureString().Width > drawContext.GetSizes()[0])
+                if (size.Width > drawContext.Width)
                     throw new OutOfBoundsException(FiscoConstants.NO_COMPONENT_FITS);
             }
 
-            Rectangle r = GetObjectRectangle(g);
-            using (var paint = new SKPaint { Typeface = TextFont.Typeface, TextSize = TextFont.Size, Color = Brush })
+            var lines = GetLines();
+            if (lines.Length == 0)
+                return;
+
+            using var paint = new SKPaint
             {
-                var coordenate = GetCoordenate(r, drawContext, _align);
-                g.DrawText(TextContent, coordenate.X, coordenate.Y, paint);
+                Typeface = TextFont.Typeface,
+                TextSize = TextFont.Size,
+                Color = Brush,
+                IsAntialias = true
+            };
+
+            var metrics = paint.FontMetrics;
+            float fontAscent = Math.Abs(metrics.Ascent);
+            float lineSpacing = metrics.Descent - metrics.Ascent + metrics.Leading;
+            if (lineSpacing <= 0)
+                lineSpacing = TextFont.Size * 1.2f;
+
+            float startY = drawContext.TopOffSet + drawContext.GetStartHeight;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                float lineWidth = paint.MeasureText(line);
+
+                float lineX = _align switch
+                {
+                    ItemAlign.Left => drawContext.LeftOffSet,
+                    ItemAlign.Center => drawContext.LeftOffSet + (drawContext.Width - drawContext.LeftOffSet - lineWidth) / 2f,
+                    ItemAlign.Right => drawContext.Width - lineWidth,
+                    _ => drawContext.LeftOffSet
+                };
+
+                float baselineY = startY + (i * lineSpacing) + fontAscent;
+                g.DrawText(line, lineX, baselineY, paint);
             }
 
-            drawContext.UpdateHeight(r.Height);
+            drawContext.UpdateHeight((int)Math.Ceiling(size.Height));
         }
 
         void IDrawable.DrawInsideTable(ref SKCanvas g, SKRect region)
         {
-            using (var paint = new SKPaint
+            if (string.IsNullOrEmpty(TextContent))
+                return;
+
+            using var paint = new SKPaint
             {
                 Typeface = TextFont.Typeface,
                 TextSize = TextFont.Size,
-                Color = Brush
-            })
+                Color = Brush,
+                IsAntialias = true
+            };
+
+            var metrics = paint.FontMetrics;
+            float fontAscent = Math.Abs(metrics.Ascent);
+            float fontDescent = metrics.Descent;
+            float textHeight = fontAscent + fontDescent;
+
+            var lines = GetLines();
+            float lineSpacing = metrics.Descent - metrics.Ascent + metrics.Leading;
+            if (lineSpacing <= 0)
+                lineSpacing = TextFont.Size * 1.2f;
+
+            float totalTextHeight = lines.Length <= 1 ? textHeight : ((lines.Length - 1) * lineSpacing + textHeight);
+            float startY = region.Top + Math.Max(0, (region.Height - totalTextHeight) / 2f);
+
+            for (int i = 0; i < lines.Length; i++)
             {
-                var coordenate = GetTableCoordenate(ref g, region);
-                g.DrawText(TextContent, coordenate.X, coordenate.Y, paint);
+                string line = lines[i];
+                float lineWidth = paint.MeasureText(line);
+
+                float lineX = _align switch
+                {
+                    ItemAlign.Left => region.Left + 2,
+                    ItemAlign.Center => region.Left + Math.Max(0, (region.Width - lineWidth) / 2f),
+                    ItemAlign.Right => region.Right - lineWidth - 2,
+                    _ => region.Left + 2
+                };
+
+                float baselineY = startY + (i * lineSpacing) + fontAscent;
+                g.DrawText(line, lineX, baselineY, paint);
             }
         }
 
         void IDisposable.Dispose()
         {
             GC.SuppressFinalize(this);
-            TextFont.Dispose();
+            TextFont?.Dispose();
         }
     }
 }
